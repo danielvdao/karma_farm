@@ -9,6 +9,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
             android:name=".NavBar"
             android:label="@string/title_activity_nav_bar" >
@@ -18,5 +19,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
