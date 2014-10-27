@@ -27,7 +27,7 @@ import android.widget.Toast;
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class NavigationDrawerFragment extends Fragment {
+public class KFNavigationDrawerFragment extends Fragment {
 
     /**
      * Remember the position of the selected item.
@@ -58,7 +58,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    public NavigationDrawerFragment() {
+    public KFNavigationDrawerFragment() {
     }
 
     @Override
@@ -126,8 +126,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
 
+        // set up the drawer's list view with items and click listener
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);

@@ -10,7 +10,7 @@ package com.cs371m.ads.karma_farm;
  * This is a class that holds the data of the JSON objects
  * returned by the Reddit API.
  */
-public class Post {
+public class KFSubmission {
 
     String subreddit;
     String title;

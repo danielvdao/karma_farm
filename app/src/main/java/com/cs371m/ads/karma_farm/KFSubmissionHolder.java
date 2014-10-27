@@ -16,27 +16,30 @@ import java.util.List;
  * Adapted from Hathy
  * (http://www.whycouch.com/2012/12/how-to-create-android-client-for-reddit.html)
  *
- * This is the class that creates Post objects out of the Reddit
+ * This is the class that creates KFSubmission objects out of the Reddit
  * API, and maintains a list of these posts for other classes
  * to use.
  *
  * @author Hathy
  */
-public class PostsHolder {
+public class KFSubmissionHolder {
 
     /**
      * We will be fetching JSON data from the API.
      */
+
     private final String URL_TEMPLATE=
             "http://www.reddit.com/r/SUBREDDIT_NAME/"
                     +".json"
                     +"?after=AFTER";
 
+    private final String TAG = "KFSubmissionHolder";
+
     String subreddit;
     String url;
     String after;
 
-    PostsHolder(String sr){
+    KFSubmissionHolder(String sr){
         subreddit=sr;
         after="";
         generateURL();
@@ -52,14 +55,14 @@ public class PostsHolder {
     }
 
     /**
-     * Returns a list of Post objects after fetching data from
+     * Returns a list of KFSubmission objects after fetching data from
      * Reddit using the JSON API.
      *
      * @return
      */
-    List<Post> fetchPosts(){
+    List<KFSubmission> fetchPosts(){
         String raw=RemoteData.readContents(url);
-        List<Post> list=new ArrayList<Post>();
+        List<KFSubmission> list=new ArrayList<KFSubmission>();
         try{
             JSONObject data=new JSONObject(raw)
                     .getJSONObject("data");
@@ -72,7 +75,7 @@ public class PostsHolder {
             for(int i=0;i<children.length();i++){
                 JSONObject cur=children.getJSONObject(i)
                         .getJSONObject("data");
-                Post p=new Post();
+                KFSubmission p=new KFSubmission();
                 p.title=cur.optString("title");
                 p.url=cur.optString("url");
                 p.numComments=cur.optInt("num_comments");
@@ -88,6 +91,8 @@ public class PostsHolder {
         }catch(Exception e){
             Log.e("fetchPosts()",e.toString());
         }
+
+        Log.d(TAG, "Fetched " + list.size() + " posts");
         return list;
     }
 
@@ -96,7 +101,7 @@ public class PostsHolder {
      * using the 'after' property
      * @return
      */
-    List<Post> fetchMorePosts(){
+    List<KFSubmission> fetchMorePosts(){
         generateURL();
         return fetchPosts();
     }

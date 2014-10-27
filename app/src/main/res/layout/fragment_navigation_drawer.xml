@@ -6,4 +6,4 @@
     android:divider="@android:color/transparent"
     android:dividerHeight="0dp"
     android:background="#cccc"
-    tools:context="com.cs371m.ads.karma_farm.NavigationDrawerFragment" />
+    tools:context="com.cs371m.ads.karma_farm.KFNavigationDrawerFragment" />

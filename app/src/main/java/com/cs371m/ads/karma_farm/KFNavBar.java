@@ -3,33 +3,23 @@ package com.cs371m.ads.karma_farm;
 import android.app.Activity;
 
 import android.app.ActionBar;
-import android.app.Dialog;
-import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
-
-import java.util.logging.Logger;
 
 
-public class NavBar extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class KFNavBar extends Activity
+        implements KFNavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private KFNavigationDrawerFragment mNavigationDrawerFragment;
+
+    private KFSubmissionListFragment mKFSubmissionListFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -41,7 +31,7 @@ public class NavBar extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav_bar);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
+        mNavigationDrawerFragment = (KFNavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
         mTitle = getTitle();
@@ -51,6 +41,10 @@ public class NavBar extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        mKFSubmissionListFragment = new KFSubmissionListFragment();
+
+
     }
 
     @Override
@@ -76,7 +70,7 @@ public class NavBar extends Activity
         Log.d("TAG", "mTitle is: " + mTitle);
 
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PostsFragment.newInstance((String) mTitle))
+                .replace(R.id.container, KFSubmissionListFragment.newInstance((String) mTitle))
                 .commit();
     }
 
@@ -162,7 +156,7 @@ public class NavBar extends Activity
 //        @Override
 //        public void onAttach(Activity activity) {
 //            super.onAttach(activity);
-//            ((NavBar) activity).onSectionAttached(
+//            ((KFNavBar) activity).onSectionAttached(
 //                    getArguments().getInt(ARG_SECTION_NUMBER));
 //        }
 //    }

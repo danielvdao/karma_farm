@@ -1,4 +1,6 @@
-package com.cs371m.ads.karma_farm; /**
+package com.cs371m.ads.karma_farm;
+
+/**
  * Created by Andy on 10/25/2014.
  */
 
@@ -9,7 +11,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import android.util.Log;
-
 
 public class RemoteData {
 
