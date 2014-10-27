@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme" >
 
         <activity
-            android:name=".KFNavBar"
+            android:name=".KFMain"
             android:label="@string/title_activity_nav_bar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

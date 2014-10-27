@@ -33,7 +33,7 @@ public class KFSubmissionListFragment extends Fragment{
     Handler mHandler;
     String mSubreddit;
     List<KFSubmission> mKFSubmissions;
-    KFSubmissionHolder mKFSubmissionHolder;
+    KFSubmissionRequester mKFSubmissionRequester;
 
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionListFragment";
@@ -44,14 +44,16 @@ public class KFSubmissionListFragment extends Fragment{
     }
 
     public static Fragment newInstance(String subreddit){
-        KFSubmissionListFragment pf = new KFSubmissionListFragment();
+
+        KFSubmissionListFragment listFragment = new KFSubmissionListFragment();
+
         Bundle args = new Bundle();
         args.putString(ARG_SUBREDDIT, subreddit);
-        pf.setArguments(args);
-        pf.mSubreddit = subreddit;
-        pf.mKFSubmissionHolder = new KFSubmissionHolder(pf.mSubreddit);
+        listFragment.setArguments(args);
+        listFragment.mSubreddit = subreddit;
+        listFragment.mKFSubmissionRequester = new KFSubmissionRequester(listFragment.mSubreddit);
 
-        return pf;
+        return listFragment;
     }
 
     @Override
@@ -71,7 +73,6 @@ public class KFSubmissionListFragment extends Fragment{
         Log.d(TAG, "found " + mKFSubmissions.size() + " submissions");
         mPostsListView =(ListView)v.findViewById(R.id.posts_list);
 
-
         return v;
     }
 
@@ -83,7 +84,6 @@ public class KFSubmissionListFragment extends Fragment{
 
     }
 
-    // why not in onCreate?
     private void initialize(){
         // This should run only once for the fragment as the
         // setRetainInstance(true) method has been called on
@@ -96,25 +96,23 @@ public class KFSubmissionListFragment extends Fragment{
             // thread. So create a new thread.
             new Thread(){
                 public void run(){
-                    mKFSubmissions.addAll(mKFSubmissionHolder.fetchPosts());
+                    mKFSubmissions.addAll(mKFSubmissionRequester.fetchPosts());
 
                     // UI elements should be accessed only in
                     // the primary thread, so we must use the
                     // handler here.
-
                     mHandler.post(new Runnable(){
                         public void run(){
                             mAdapter = new KFSubmissionListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
                             mPostsListView.setAdapter(mAdapter);
                         }
                     });
+
                 }
             }.start();
         } else {
             mAdapter = new KFSubmissionListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
             mPostsListView.setAdapter(mAdapter);
         }
-
-
     }
 }

@@ -25,20 +25,20 @@ public class KFSubmissionListAdapter extends ArrayAdapter<KFSubmission> {
         this.mContext = context;
         this.mLayoutResourceId = layoutResourceId;
         this.mData = data;
-
     }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View row = convertView;
-        PostHolder holder = null;
+        SubmissionHolder holder = null;
 
         // if new row initialize child views, use a view we've scrolled past
         if(row == null) {
             LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
             row = inflater.inflate(mLayoutResourceId, parent, false);
 
-            holder = new PostHolder();
+            holder = new SubmissionHolder();
             holder.score = (TextView)row.findViewById(R.id.post_score);
             holder.title = (TextView)row.findViewById(R.id.post_title);
             holder.details = (TextView)row.findViewById(R.id.post_details);
@@ -46,7 +46,7 @@ public class KFSubmissionListAdapter extends ArrayAdapter<KFSubmission> {
             row.setTag(holder);
 
         } else {
-            holder = (PostHolder)row.getTag();
+            holder = (SubmissionHolder)row.getTag();
         }
 
         KFSubmission p = mData.get(position);
@@ -57,10 +57,9 @@ public class KFSubmissionListAdapter extends ArrayAdapter<KFSubmission> {
         return row;
     }
 
-    static class PostHolder {
+    static class SubmissionHolder {
         TextView score;
         TextView title;
         TextView details;
     }
-
 }

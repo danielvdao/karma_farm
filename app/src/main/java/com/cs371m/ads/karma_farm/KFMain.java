@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
 
-public class KFNavBar extends Activity
+public class KFMain extends Activity
         implements KFNavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
@@ -24,7 +24,7 @@ public class KFNavBar extends Activity
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
-    private CharSequence mTitle;
+    private CharSequence mSubredditName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +34,9 @@ public class KFNavBar extends Activity
         mNavigationDrawerFragment = (KFNavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
-        mTitle = getTitle();
-        Log.d("TAG", "mTitle set to "  + mTitle);
+        mSubredditName = getTitle();
+
+        Log.d("TAG", "SubredditName set to "  + mSubredditName);
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -54,36 +55,36 @@ public class KFNavBar extends Activity
 
         switch (position) {
             case 0:
-                mTitle = getString(R.string.title_section1);
+                mSubredditName = getString(R.string.title_section1);
                 break;
             case 1:
-                mTitle = getString(R.string.title_section2);
+                mSubredditName = getString(R.string.title_section2);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section3);
+                mSubredditName = getString(R.string.title_section3);
                 break;
         }
 
-        setTitle(mTitle);
+        setTitle(mSubredditName);
 
         Log.d("TAG", "Position selection is: " + position);
-        Log.d("TAG", "mTitle is: " + mTitle);
+        Log.d("TAG", "mSubredditName is: " + mSubredditName);
 
         fragmentManager.beginTransaction()
-                .replace(R.id.container, KFSubmissionListFragment.newInstance((String) mTitle))
+                .replace(R.id.container, KFSubmissionListFragment.newInstance((String) mSubredditName))
                 .commit();
     }
 
 //    public void onSectionAttached(int number) {
 //        switch (number) {
 //            case 1:
-//                mTitle = getString(R.string.title_section1);
+//                mSubredditName = getString(R.string.title_section1);
 //                break;
 //            case 2:
-//                mTitle = getString(R.string.title_section2);
+//                mSubredditName = getString(R.string.title_section2);
 //                break;
 //            case 3:
-//                mTitle = getString(R.string.title_section3);
+//                mSubredditName = getString(R.string.title_section3);
 //                break;
 //        }
 //    }
@@ -92,7 +93,7 @@ public class KFNavBar extends Activity
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+        actionBar.setTitle(mSubredditName);
     }
 
 
@@ -120,45 +121,4 @@ public class KFNavBar extends Activity
         }
         return super.onOptionsItemSelected(item);
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-//    public static class PlaceholderFragment extends Fragment {
-//        /**
-//         * The fragment argument representing the section number for this
-//         * fragment.
-//         */
-//        private static final String ARG_SECTION_NUMBER = "section_number";
-//
-//        /**
-//         * Returns a new instance of this fragment for the given section
-//         * number.
-//         */
-//        public static PlaceholderFragment newInstance(int sectionNumber) {
-//            PlaceholderFragment fragment = new PlaceholderFragment();
-//            Bundle args = new Bundle();
-//            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-//            fragment.setArguments(args);
-//            return fragment;
-//        }
-//
-//        public PlaceholderFragment() {
-//        }
-//
-//        @Override
-//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                Bundle savedInstanceState) {
-//            View rootView = inflater.inflate(R.layout.fragment_nav_bar, container, false);
-//            return rootView;
-//        }
-//
-//        @Override
-//        public void onAttach(Activity activity) {
-//            super.onAttach(activity);
-//            ((KFNavBar) activity).onSectionAttached(
-//                    getArguments().getInt(ARG_SECTION_NUMBER));
-//        }
-//    }
-
 }

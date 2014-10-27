@@ -12,17 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Adapted from Hathy
- * (http://www.whycouch.com/2012/12/how-to-create-android-client-for-reddit.html)
- *
- * This is the class that creates KFSubmission objects out of the Reddit
- * API, and maintains a list of these posts for other classes
- * to use.
- *
- * @author Hathy
- */
-public class KFSubmissionHolder {
+public class KFSubmissionRequester {
 
     /**
      * We will be fetching JSON data from the API.
@@ -33,13 +23,15 @@ public class KFSubmissionHolder {
                     +".json"
                     +"?after=AFTER";
 
-    private final String TAG = "KFSubmissionHolder";
+    private final String TAG = "KFSubmissionRequester";
+
+    private final String currentApiVersion = "/api/v0";
 
     String subreddit;
     String url;
     String after;
 
-    KFSubmissionHolder(String sr){
+    KFSubmissionRequester(String sr){
         subreddit=sr;
         after="";
         generateURL();
@@ -63,7 +55,9 @@ public class KFSubmissionHolder {
     List<KFSubmission> fetchPosts(){
         String raw=RemoteData.readContents(url);
         List<KFSubmission> list=new ArrayList<KFSubmission>();
+
         try{
+
             JSONObject data=new JSONObject(raw)
                     .getJSONObject("data");
             JSONArray children=data.getJSONArray("children");
