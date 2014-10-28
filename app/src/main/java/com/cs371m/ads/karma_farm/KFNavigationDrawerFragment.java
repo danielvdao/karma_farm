@@ -55,6 +55,7 @@ public class KFNavigationDrawerFragment extends Fragment {
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
+
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 

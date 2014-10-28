@@ -10,16 +10,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by stipton on 10/26/14.
- */
-public class KFSubmissionListAdapter extends ArrayAdapter<KFSubmission> {
+public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
     Context mContext;
     int mLayoutResourceId;
     List<KFSubmission> mData = null;
 
-    public KFSubmissionListAdapter(Context context, int layoutResourceId, List<KFSubmission> data) {
+    public KFSubmissionsListAdapter(Context context, int layoutResourceId, List<KFSubmission> data) {
         super(context, layoutResourceId, data);
 
         this.mContext = context;
@@ -31,7 +28,7 @@ public class KFSubmissionListAdapter extends ArrayAdapter<KFSubmission> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View row = convertView;
-        SubmissionHolder holder = null;
+        SubmissionHolder holder;
 
         // if new row initialize child views, use a view we've scrolled past
         if(row == null) {
@@ -49,11 +46,11 @@ public class KFSubmissionListAdapter extends ArrayAdapter<KFSubmission> {
             holder = (SubmissionHolder)row.getTag();
         }
 
-        KFSubmission p = mData.get(position);
+        KFSubmission submission = mData.get(position);
 
-        holder.title.setText(p.title);
-        holder.details.setText(p.getDetails());
-        holder.score.setText(p.getScore());
+        holder.title.setText(submission.title);
+        holder.details.setText(submission.getDetails());
+        holder.score.setText(submission.getScore());
         return row;
     }
 

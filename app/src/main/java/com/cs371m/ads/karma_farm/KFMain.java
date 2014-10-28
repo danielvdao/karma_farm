@@ -19,7 +19,7 @@ public class KFMain extends Activity
      */
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
 
-    private KFSubmissionListFragment mKFSubmissionListFragment;
+    private KFSubmissionsListFragment mKFSubmissionsListFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -43,9 +43,7 @@ public class KFMain extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        mKFSubmissionListFragment = new KFSubmissionListFragment();
-
-
+        mKFSubmissionsListFragment = new KFSubmissionsListFragment();
     }
 
     @Override
@@ -71,7 +69,7 @@ public class KFMain extends Activity
         Log.d("TAG", "mSubredditName is: " + mSubredditName);
 
         fragmentManager.beginTransaction()
-                .replace(R.id.container, KFSubmissionListFragment.newInstance((String) mSubredditName))
+                .replace(R.id.container, KFSubmissionsListFragment.newInstance((String) mSubredditName))
                 .commit();
     }
 
