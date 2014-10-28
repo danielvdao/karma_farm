@@ -12,7 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 
 
 public class KFMain extends Activity
-        implements KFNavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements KFNavigationDrawerFragment.NavigationDrawerCallbacks, KFSubmissionsListFragment.OnSubmissionSelectedListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -20,6 +20,8 @@ public class KFMain extends Activity
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
 
     private KFSubmissionsListFragment mKFSubmissionsListFragment;
+
+    private KFCommentsListFragment mKFCommentsFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -73,7 +75,17 @@ public class KFMain extends Activity
                 .commit();
     }
 
-//    public void onSectionAttached(int number) {
+    @Override
+    public void onSubmissionSelected(String id) {
+
+        FragmentManager fragmentManager = getFragmentManager();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, KFCommentsListFragment.newInstance(id))
+                .commit();
+    }
+
+    //    public void onSectionAttached(int number) {
 //        switch (number) {
 //            case 1:
 //                mSubredditName = getString(R.string.title_section1);

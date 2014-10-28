@@ -1,6 +1,7 @@
 package com.cs371m.ads.karma_farm;
 
 import android.app.Fragment;
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,13 +15,12 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KFCommentsListFragment extends Fragment{
+public class KFCommentsListFragment extends ListFragment {
 
     KFCommentsListView mCommentsListView;
     KFCommentsListAdapter mAdapter;
     Handler mHandler;
-    String mSubreddit;
-    JSONArray mComments;
+    List<KFComment> mComments;
     KFCommentsRequester mCommentsRequester;
 
     private static final String ARG_SUBREDDIT = "subreddit";
@@ -42,6 +42,8 @@ public class KFCommentsListFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        mComments = new ArrayList<KFComment>();
+        this.setListAdapter(mAdapter);
         initialize();
     }
 
@@ -50,9 +52,6 @@ public class KFCommentsListFragment extends Fragment{
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.comments, container, false);
-
-        mCommentsListView = (KFCommentsListView) v.findViewById(R.id.comments_list);
-
         return v;
     }
 
@@ -69,7 +68,7 @@ public class KFCommentsListFragment extends Fragment{
         // setRetainInstance(true) method has been called on
         // this fragment
         Log.d(TAG, "initializing list");
-        if(mComments.isNull(0)){
+        if(mComments.size() == 0){
 
             // Must execute network tasks outside the UI
             // thread. So create a new thread.
@@ -82,7 +81,7 @@ public class KFCommentsListFragment extends Fragment{
                     mHandler.post(new Runnable(){
                         public void run(){
                             mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments);
-                            mCommentsListView.setAdapter(mAdapter);
+                           setListAdapter(mAdapter);
                         }
                     });
 
@@ -90,7 +89,7 @@ public class KFCommentsListFragment extends Fragment{
             }.start();
         } else {
             mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments);
-            mCommentsListView.setAdapter(mAdapter);
+            setListAdapter(mAdapter);
         }
     }
 }

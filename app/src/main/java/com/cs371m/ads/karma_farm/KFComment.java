@@ -4,13 +4,21 @@ import java.util.ArrayList;
 
 public class KFComment {
 
-    public String mAuthor;
-    public String mSubmissionId;
-    public int mKarma;
-    public int mKFscore;
-    public ArrayList<? extends KFComment> mReplies;
+    public String author;
+    public String text;
+    public int karma;
+    public int KFscore;
+    public int depth;
+    public ArrayList<KFComment> replies;
+
+    public KFComment() {
+
+    }
 
     private class KFMoreComments extends KFComment{
 
+        public KFMoreComments() {
+
+        }
     }
 }
