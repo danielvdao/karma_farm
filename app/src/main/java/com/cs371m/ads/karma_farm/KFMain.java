@@ -1,15 +1,14 @@
 package com.cs371m.ads.karma_farm;
 
-import android.app.Activity;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.widget.DrawerLayout;
-
 
 public class KFMain extends Activity
         implements KFNavigationDrawerFragment.NavigationDrawerCallbacks, KFSubmissionsListFragment.OnSubmissionSelectedListener {
@@ -38,7 +37,7 @@ public class KFMain extends Activity
 
         mSubredditName = getTitle();
 
-        Log.d("TAG", "SubredditName set to "  + mSubredditName);
+        Log.d("TAG", "SubredditName set to " + mSubredditName);
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -55,16 +54,24 @@ public class KFMain extends Activity
 
         switch (position) {
             case 0:
-                mSubredditName = getString(R.string.title_section1);
+                mSubredditName = getString(R.string.title_section0);
                 break;
             case 1:
-                mSubredditName = getString(R.string.title_section2);
+                mSubredditName = getString(R.string.title_section1);
                 break;
             case 2:
-                mSubredditName = getString(R.string.title_section3);
+                mSubredditName = getString(R.string.title_section2);
                 break;
             case 3:
+                mSubredditName = getString(R.string.title_section3);
+                break;
+            case 4:
                 mSubredditName = getString(R.string.title_section4);
+
+            case 5:
+                mSubredditName = getString(R.string.title_section5);
+                break;
+
         }
 
         setTitle(mSubredditName);
