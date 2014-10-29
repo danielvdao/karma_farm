@@ -9,13 +9,14 @@ public class KFComment {
     public int karma;
     public int KFscore;
     public int depth;
-    public ArrayList<KFComment> replies;
 
     public KFComment() {
 
     }
 
      public static class KFMoreComments extends KFComment{
+
+         public int depth;
 
         public KFMoreComments() {
 

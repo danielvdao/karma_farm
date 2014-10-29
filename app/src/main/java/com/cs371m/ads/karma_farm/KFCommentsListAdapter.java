@@ -13,7 +13,7 @@ import org.json.JSONArray;
 
 import java.util.List;
 
-public class KFCommentsListAdapter extends ArrayAdapter<KFComment>{
+public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
 
     public static final String TAG = "KFCommentsListAdapter";
 
@@ -37,43 +37,42 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment>{
 
         Class elem = mData.get(position).getClass();
 
-        if (elem == KFComment.KFMoreComments.class) {
-            MoreCommentsHolder moreCommentsHolder = new MoreCommentsHolder();
-            moreCommentsHolder.msg = (TextView) row.findViewById(R.id.msg);
-        } else {
+        // if new row initialize child views, use a view we've scrolled past
+        if (row == null) {
+
             commentHolder = new CommentHolder();
-            // if new row initialize child views, use a view we've scrolled past
-            if (row == null) {
-
-                if (elem == KFComment.class) {
-                    LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-                    row = inflater.inflate(mLayoutResourceId, parent, false);
-
-                    commentHolder.author = (TextView) row.findViewById(R.id.author);
-                    commentHolder.text = (TextView) row.findViewById(R.id.text);
-                    commentHolder.karma = (TextView) row.findViewById(R.id.karma);
-                    commentHolder.KFscore = (TextView) row.findViewById(R.id.score);
+            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+            row = inflater.inflate(mLayoutResourceId, parent, false);
 
 
-                    row.setTag(commentHolder);
-                }
-            } else {
-                commentHolder = (CommentHolder) row.getTag();
-            }
+            commentHolder.author = (TextView) row.findViewById(R.id.author);
+            commentHolder.text = (TextView) row.findViewById(R.id.text);
+            commentHolder.karma = (TextView) row.findViewById(R.id.karma);
+            commentHolder.KFscore = (TextView) row.findViewById(R.id.score);
+            commentHolder.msg = (TextView) row.findViewById(R.id.msg);
 
-            KFComment comment = mData.get(position);
+            row.setTag(commentHolder);
+        } else {
+            commentHolder = (CommentHolder) row.getTag();
+        }
+
+        KFComment comment = mData.get(position);
+        if (elem == KFComment.class) {
             commentHolder.author.setText(comment.author);
             commentHolder.text.setText(comment.text);
             commentHolder.karma.setText(Integer.toString(comment.karma));
             commentHolder.KFscore.setText("Karma Potential: " + Integer.toString(comment.KFscore));
 
-            try {
-                row.setPadding(15 * comment.depth, 0, 0, 0);
-            } catch (NullPointerException e) {
-                Log.d(TAG, "Null Pointer Exception on comment.detph");
-            }
+        } else {
+            commentHolder.msg.setText("More C0mments");
         }
+
+        row.setPadding(30 * comment.depth, 0, 0, 0);
+        row.setFocusable(false);
+        row.setEnabled(false);
+        row.setOnClickListener(null);
         return row;
+
     }
 
     static class CommentHolder {
@@ -81,13 +80,8 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment>{
         TextView text;
         TextView karma;
         TextView KFscore;
-    }
-
-    static class MoreCommentsHolder {
-        // later should add button to request
-        // another comment tree at this node
         TextView msg;
     }
 
-
 }
+

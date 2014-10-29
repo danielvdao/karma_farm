@@ -42,7 +42,6 @@ public class KFCommentsRequester {
             JSONArray comments = (JSONArray) data.getJSONArray("comments").get(0);
 
             int depth[] = new int[]{0};
-
             requestCommentsHelper(comments, result, depth);
 
         } catch (Exception e) {
@@ -75,18 +74,17 @@ public class KFCommentsRequester {
                         comment.karma = cur.getInt("score");
                         comment.depth = depth[0];
 
+                        result.add(comment);
+
                         if ( cur.has("replies")) {
-                            comment.replies = new ArrayList<KFComment>();
                             try {
-                                requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), comment.replies, depth);
+                                requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), result, depth);
                             } catch (JSONException je) {
                                 Log.d(TAG, "JSONException in recursive call");
                             } catch (NullPointerException e) {
                                 Log.d(TAG, "Null Pointer Exception in recursive call");
                             }
                         }
-
-                        result.add(comment);
                     }
                 }catch(JSONException je){
                     Log.d(TAG, "JSONException!!!");
