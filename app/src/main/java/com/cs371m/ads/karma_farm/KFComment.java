@@ -15,7 +15,7 @@ public class KFComment {
 
     }
 
-    private class KFMoreComments extends KFComment{
+     public static class KFMoreComments extends KFComment{
 
         public KFMoreComments() {
 

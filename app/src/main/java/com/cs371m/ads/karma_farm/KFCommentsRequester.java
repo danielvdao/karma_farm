@@ -49,7 +49,6 @@ public class KFCommentsRequester {
             Log.e("requestSubmissionList()", e.toString());
         }
 
-
         return result;
     }
 
@@ -59,33 +58,42 @@ public class KFCommentsRequester {
             depth[0]++;
 
             for(int i = 0; i < comments.length(); i++ ) {
+
                 try {
+                    JSONObject cur = comments.getJSONObject(i);
 
+                    // If MoreComments, just add placeholder class
+                    if (cur.has("body")) {
+                        result.add(new KFComment.KFMoreComments());
+                    } else {
 
-                    KFComment comment = new KFComment();
-                    JSONObject cur = comments.getJSONArray(0).getJSONObject(i);
+                        KFComment comment = new KFComment();
 
-                    comment.author = cur.optString("author");
-                    comment.text = cur.optString("text");
-                    comment.KFscore = cur.optInt("rank");
-                    comment.karma = cur.optInt("score");
-                    comment.depth = depth[0];
-                    requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), comment.replies, depth);
+                        comment.author = cur.getString("author");
+                        comment.text = cur.getString("text");
+                        comment.KFscore = cur.getInt("rank");
+                        comment.karma = cur.getInt("score");
+                        comment.depth = depth[0];
 
-                    result.add(comment);
+                        if ( cur.has("replies")) {
+                            comment.replies = new ArrayList<KFComment>();
+                            try {
+                                requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), comment.replies, depth);
+                            } catch (JSONException je) {
+                                Log.d(TAG, "JSONException in recursive call");
+                            } catch (NullPointerException e) {
+                                Log.d(TAG, "Null Pointer Exception in recursive call");
+                            }
+                        }
 
-                    Log.d(TAG, comment.author + " said " + comment.text + " and received "
-                            + comment.karma + " karma.");
-
-                } catch (JSONException je) {
-                    Log.d(TAG, "JSONException:");
-                    je.printStackTrace();
-//                    Log.d(TAG, je.getLocalizedMessage());
+                        result.add(comment);
+                    }
+                }catch(JSONException je){
+                    Log.d(TAG, "JSONException!!!");
                 }
-
             }
-            depth[0]--;
-
         }
+
+        depth[0]--;
     }
 }

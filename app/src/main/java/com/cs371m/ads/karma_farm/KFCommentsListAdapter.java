@@ -2,6 +2,7 @@ package com.cs371m.ads.karma_farm;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +13,9 @@ import org.json.JSONArray;
 
 import java.util.List;
 
-/**
- * Created by stipton on 10/28/14.
- */
 public class KFCommentsListAdapter extends ArrayAdapter<KFComment>{
+
+    public static final String TAG = "KFCommentsListAdapter";
 
     Context mContext;
     int mLayoutResourceId;
@@ -33,31 +33,46 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment>{
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View row = convertView;
-        CommentHolder holder;
+        CommentHolder commentHolder;
 
-        // if new row initialize child views, use a view we've scrolled past
-        if(row == null) {
-            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-            row = inflater.inflate(mLayoutResourceId, parent, false);
+        Class elem = mData.get(position).getClass();
 
-            holder = new CommentHolder();
-            holder.author = (TextView)row.findViewById(R.id.author);
-            holder.text = (TextView)row.findViewById(R.id.text);
-            holder.karma = (TextView)row.findViewById(R.id.karma);
-            holder.KFscore = (TextView)row.findViewById(R.id.score);
-
-            row.setTag(holder);
-
+        if (elem == KFComment.KFMoreComments.class) {
+            MoreCommentsHolder moreCommentsHolder = new MoreCommentsHolder();
+            moreCommentsHolder.msg = (TextView) row.findViewById(R.id.msg);
         } else {
-            holder = (CommentHolder)row.getTag();
+            commentHolder = new CommentHolder();
+            // if new row initialize child views, use a view we've scrolled past
+            if (row == null) {
+
+                if (elem == KFComment.class) {
+                    LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+                    row = inflater.inflate(mLayoutResourceId, parent, false);
+
+                    commentHolder.author = (TextView) row.findViewById(R.id.author);
+                    commentHolder.text = (TextView) row.findViewById(R.id.text);
+                    commentHolder.karma = (TextView) row.findViewById(R.id.karma);
+                    commentHolder.KFscore = (TextView) row.findViewById(R.id.score);
+
+
+                    row.setTag(commentHolder);
+                }
+            } else {
+                commentHolder = (CommentHolder) row.getTag();
+            }
+
+            KFComment comment = mData.get(position);
+            commentHolder.author.setText(comment.author);
+            commentHolder.text.setText(comment.text);
+            commentHolder.karma.setText(Integer.toString(comment.karma));
+            commentHolder.KFscore.setText("Karma Potential: " + Integer.toString(comment.KFscore));
+
+            try {
+                row.setPadding(15 * comment.depth, 0, 0, 0);
+            } catch (NullPointerException e) {
+                Log.d(TAG, "Null Pointer Exception on comment.detph");
+            }
         }
-
-        KFComment comment = mData.get(position);
-        holder.author.setText(comment.author);
-        holder.text.setText(comment.text);
-        holder.karma.setText(comment.karma);
-        holder.KFscore.setText(comment.KFscore);
-
         return row;
     }
 
@@ -66,6 +81,12 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment>{
         TextView text;
         TextView karma;
         TextView KFscore;
+    }
+
+    static class MoreCommentsHolder {
+        // later should add button to request
+        // another comment tree at this node
+        TextView msg;
     }
 
 

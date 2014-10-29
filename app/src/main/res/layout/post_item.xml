@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:textColor="#ff5700"
         android:textAppearance="?android:attr/textAppearanceLarge"
         />
 
@@ -19,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/post_score"
         android:layout_alignParentTop="true"
+        android:textColor="#336699"
         android:textAppearance="?android:attr/textAppearanceMedium"
         />
 
@@ -28,6 +30,14 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/post_score"
         android:layout_below="@+id/post_title"
+        android:layout_marginTop="10dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@id/post_details" />
+
 </RelativeLayout>
