@@ -55,13 +55,19 @@ public class KFMain extends Activity
 
         switch (position) {
             case 0:
-                mSubredditName = getString(R.string.title_section1);
+                mSubredditName = getString(R.string.title_section0);
                 break;
             case 1:
-                mSubredditName = getString(R.string.title_section2);
+                mSubredditName = getString(R.string.title_section1);
                 break;
             case 2:
+                mSubredditName = getString(R.string.title_section2);
+                break;
+            case 3:
                 mSubredditName = getString(R.string.title_section3);
+                break;
+            case 4:
+                mSubredditName = getString(R.string.title_section4);
                 break;
         }
 
