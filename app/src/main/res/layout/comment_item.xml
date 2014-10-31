@@ -33,16 +33,26 @@
         android:layout_below="@id/text"
         android:textColor="#ff0000"/>
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_below="@id/score"/>
-
     <TextView
         android:id="@+id/msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/score" />
+
+    <View
+        android:id="@+id/comment_border"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@id/score"/>
+
+    <Button
+        android:id="@+id/more_comments_button"
+        android:layout_width="match_parent"
+        android:text="@string/load_more_comments"
+        android:textSize="8sp"
+        android:layout_height="25dp" />
+
+
 
 </RelativeLayout>

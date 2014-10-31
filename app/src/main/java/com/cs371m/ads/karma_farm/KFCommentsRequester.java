@@ -63,7 +63,9 @@ public class KFCommentsRequester {
 
                     // If MoreComments, just add placeholder class
                     if (cur.has("body")) {
-                        result.add(new KFComment.KFMoreComments());
+                        KFComment.KFMoreComments moreComment = new KFComment.KFMoreComments();
+                        moreComment.depth = depth[0];
+                        result.add(moreComment);
                     } else {
 
                         KFComment comment = new KFComment();

@@ -16,10 +16,5 @@ public class KFComment {
 
      public static class KFMoreComments extends KFComment{
 
-         public int depth;
-
-        public KFMoreComments() {
-
-        }
     }
 }

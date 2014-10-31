@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -49,7 +50,8 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
             commentHolder.text = (TextView) row.findViewById(R.id.text);
             commentHolder.karma = (TextView) row.findViewById(R.id.karma);
             commentHolder.KFscore = (TextView) row.findViewById(R.id.score);
-            commentHolder.msg = (TextView) row.findViewById(R.id.msg);
+            commentHolder.border = row.findViewById(R.id.comment_border);
+            commentHolder.moreComments = (Button) row.findViewById(R.id.more_comments_button);
 
             row.setTag(commentHolder);
         } else {
@@ -57,14 +59,26 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
         }
 
         KFComment comment = mData.get(position);
-        if (elem == KFComment.class) {
+
+        if (elem != KFComment.KFMoreComments.class) {
             commentHolder.author.setText(comment.author);
             commentHolder.text.setText(comment.text);
             commentHolder.karma.setText(Integer.toString(comment.karma));
             commentHolder.KFscore.setText("Karma Potential: " + Integer.toString(comment.KFscore));
-
+            commentHolder.border.setVisibility(View.VISIBLE);
+            commentHolder.author.setVisibility(View.VISIBLE);
+            commentHolder.text.setVisibility(View.VISIBLE);
+            commentHolder.karma.setVisibility(View.VISIBLE);
+            commentHolder.KFscore.setVisibility(View.VISIBLE);
+            commentHolder.border.setVisibility(View.VISIBLE);
+            commentHolder.moreComments.setVisibility(View.GONE);
         } else {
-            commentHolder.msg.setText("More Comments");
+            commentHolder.author.setVisibility(View.GONE);
+            commentHolder.text.setVisibility(View.GONE);
+            commentHolder.karma.setVisibility(View.GONE);
+            commentHolder.KFscore.setVisibility(View.GONE);
+            commentHolder.border.setVisibility(View.GONE);
+            commentHolder.moreComments.setVisibility(View.VISIBLE);
         }
 
         row.setPadding(30 * comment.depth, 0, 0, 0);
@@ -80,7 +94,8 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
         TextView text;
         TextView karma;
         TextView KFscore;
-        TextView msg;
+        View border;
+        Button moreComments;
     }
 
 }
