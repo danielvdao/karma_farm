@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 
@@ -17,11 +18,11 @@ import java.util.List;
 
 public class KFCommentsListFragment extends ListFragment {
 
-    KFCommentsListView mCommentsListView;
     KFCommentsListAdapter mAdapter;
     Handler mHandler;
     List<KFComment> mComments;
     KFCommentsRequester mCommentsRequester;
+    private ProgressBar spinner;
 
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionsListFragment";
@@ -43,22 +44,20 @@ public class KFCommentsListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         mComments = new ArrayList<KFComment>();
-        this.setListAdapter(mAdapter);
-        initialize();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.comments, container, false);
-        return v;
+        return inflater.inflate(R.layout.comments, container, false);
     }
-
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+
+
+        initialize();
         super.onActivityCreated(savedInstanceState);
 
     }
@@ -68,6 +67,9 @@ public class KFCommentsListFragment extends ListFragment {
         // setRetainInstance(true) method has been called on
         // this fragment
         Log.d(TAG, "initializing list");
+        spinner = (ProgressBar) getView().findViewById(R.id.comments_progress_bar);
+        spinner.setVisibility(View.VISIBLE
+        );
         if(mComments.size() == 0){
 
             // Must execute network tasks outside the UI
@@ -81,7 +83,8 @@ public class KFCommentsListFragment extends ListFragment {
                     mHandler.post(new Runnable(){
                         public void run(){
                             mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments);
-                           setListAdapter(mAdapter);
+                            setListAdapter(mAdapter);
+                            spinner.setVisibility(View.GONE);
                         }
                     });
 
@@ -90,6 +93,7 @@ public class KFCommentsListFragment extends ListFragment {
         } else {
             mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments);
             setListAdapter(mAdapter);
+            spinner.setVisibility(View.GONE);
         }
     }
 }
