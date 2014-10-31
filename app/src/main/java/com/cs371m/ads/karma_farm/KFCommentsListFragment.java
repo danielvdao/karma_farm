@@ -68,8 +68,8 @@ public class KFCommentsListFragment extends ListFragment {
         // this fragment
         Log.d(TAG, "initializing list");
         spinner = (ProgressBar) getView().findViewById(R.id.comments_progress_bar);
-        spinner.setVisibility(View.VISIBLE
-        );
+        spinner.setVisibility(View.VISIBLE);
+
         if(mComments.size() == 0){
 
             // Must execute network tasks outside the UI

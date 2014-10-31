@@ -91,6 +91,7 @@ public class KFMain extends Activity
 
         fragmentManager.beginTransaction()
                 .replace(R.id.container, KFCommentsListFragment.newInstance(id))
+                .addToBackStack(null)   
                 .commit();
     }
 
