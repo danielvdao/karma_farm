@@ -1,7 +1,5 @@
 package com.cs371m.ads.karma_farm;
 
-import java.util.ArrayList;
-
 public class KFComment {
 
     public String author;

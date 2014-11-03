@@ -15,7 +15,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="no_comments">No here comments yet</string>
     <string name="action_example">More</string>
-    <string name="load_more_comments">load more commments</string>
+    <string name="load_more_comments">load more comments</string>
 
 
 </resources>

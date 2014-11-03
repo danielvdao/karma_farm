@@ -55,8 +55,6 @@ public class KFCommentsListFragment extends ListFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-
-
         initialize();
         super.onActivityCreated(savedInstanceState);
 

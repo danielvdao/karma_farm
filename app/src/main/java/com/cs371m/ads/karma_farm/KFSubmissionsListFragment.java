@@ -10,23 +10,22 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-//import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 public class KFSubmissionsListFragment extends ListFragment {
 
-    ListView mPostsListView;
     KFSubmissionsListAdapter mAdapter;
     Handler mHandler;
     String mSubreddit;
     List<KFSubmission> mKFSubmissions;
     KFSubmissionsRequester mKFSubmissionsRequester;
     OnSubmissionSelectedListener mListener;
+    private ProgressBar spinner;
 
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionsListFragment";
@@ -53,8 +52,6 @@ public class KFSubmissionsListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-
-        initialize();
     }
 
     @Override
@@ -68,12 +65,10 @@ public class KFSubmissionsListFragment extends ListFragment {
         return v;
     }
 
-
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        initialize();
     }
 
     // KFMain must implement this interface
@@ -104,6 +99,9 @@ public class KFSubmissionsListFragment extends ListFragment {
         // setRetainInstance(true) method has been called on
         // this fragment
         Log.d(TAG, "initializing list");
+        spinner = (ProgressBar) getView().findViewById(R.id.submissions_progress_bar);
+        spinner.setVisibility(View.VISIBLE);
+
         if(mKFSubmissions.size()==0){
 
             // Must execute network tasks outside the UI
@@ -122,6 +120,7 @@ public class KFSubmissionsListFragment extends ListFragment {
                             Log.d(TAG, "mHandler.run()");
                             mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
                             setListAdapter(mAdapter);
+                            spinner.setVisibility(View.GONE);
                         }
                     });
 
@@ -131,6 +130,7 @@ public class KFSubmissionsListFragment extends ListFragment {
             Log.d(TAG, "in initialize() else block");
             mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
             setListAdapter(mAdapter);
+            spinner.setVisibility(View.GONE);
         }
     }
 }
