@@ -17,10 +17,9 @@ public class KFMain extends Activity
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
-
     private KFSubmissionsListFragment mKFSubmissionsListFragment;
-
     private KFCommentsListFragment mKFCommentsFragment;
+    private String mFrag;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -37,14 +36,28 @@ public class KFMain extends Activity
 
         mSubredditName = getTitle();
 
-        Log.d("TAG", "SubredditName set to " + mSubredditName);
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        mKFSubmissionsListFragment = new KFSubmissionsListFragment();
+        if (savedInstanceState != null) {
+            mFrag = savedInstanceState.getString("fragmentName");
+
+            if (mFrag != null && mFrag.equals("comments")) {
+                mKFCommentsFragment = (KFCommentsListFragment)
+                        getFragmentManager().findFragmentByTag("KFCommentsListFragment");
+
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, mKFCommentsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        } else {
+            mFrag = "submissions";
+            mKFSubmissionsListFragment = new KFSubmissionsListFragment();
+        }
     }
 
     @Override
@@ -87,10 +100,11 @@ public class KFMain extends Activity
     @Override
     public void onSubmissionSelected(String id) {
 
+        mFrag = "comments";
         FragmentManager fragmentManager = getFragmentManager();
 
         fragmentManager.beginTransaction()
-                .replace(R.id.container, KFCommentsListFragment.newInstance(id))
+                .replace(R.id.container, KFCommentsListFragment.newInstance(id),"KFCommentsListFragment")
                 .addToBackStack(null)   
                 .commit();
     }
@@ -140,5 +154,11 @@ public class KFMain extends Activity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("fragmentName", mFrag);
     }
 }

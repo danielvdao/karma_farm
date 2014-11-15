@@ -16,6 +16,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Intent.getIntent;
+
 public class KFCommentsListFragment extends ListFragment {
 
     KFCommentsListAdapter mAdapter;
@@ -94,4 +96,5 @@ public class KFCommentsListFragment extends ListFragment {
             spinner.setVisibility(View.GONE);
         }
     }
+
 }
