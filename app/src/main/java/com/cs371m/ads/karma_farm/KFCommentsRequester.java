@@ -79,17 +79,11 @@ public class KFCommentsRequester {
                         result.add(comment);
 
                         if ( cur.has("replies")) {
-                            try {
-                                requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), result, depth);
-                            } catch (JSONException je) {
-                                Log.d(TAG, "JSONException in recursive call");
-                            } catch (NullPointerException e) {
-                                Log.d(TAG, "Null Pointer Exception in recursive call");
-                            }
+                           requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), result, depth);
                         }
                     }
                 }catch(JSONException je){
-                    Log.d(TAG, "JSONException!!!");
+                    Log.d(TAG, "JSONException while requesting comments");
                 }
             }
         }

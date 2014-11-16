@@ -3,23 +3,31 @@ package com.cs371m.ads.karma_farm;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+ */
 public class KFMain extends Activity
         implements KFNavigationDrawerFragment.NavigationDrawerCallbacks, KFSubmissionsListFragment.OnSubmissionSelectedListener {
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
+    private static final String TAG = "KFMain";
+    private static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
+    private static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
+    private static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
+
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
-    private KFSubmissionsListFragment mKFSubmissionsListFragment;
-    private KFCommentsListFragment mKFCommentsFragment;
-    private String mFrag;
+    private String mAttachedFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -31,11 +39,15 @@ public class KFMain extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav_bar);
 
+        KFSubmissionsListFragment mKFSubmissionsListFragment;
+        KFCommentsListFragment mKFCommentsFragment;
+
+        Fragment lastFragment = null;
+
         mNavigationDrawerFragment = (KFNavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
         mSubredditName = getTitle();
-
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -43,19 +55,34 @@ public class KFMain extends Activity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         if (savedInstanceState != null) {
-            mFrag = savedInstanceState.getString("fragmentName");
+            mAttachedFragment = savedInstanceState.getString("attachedFragment");
+            if (mAttachedFragment != null) {
+                // attach last fragment before config change
+                if (mAttachedFragment.equals(COMMENTS_FRAGMENT)) {
+                    mKFCommentsFragment = (KFCommentsListFragment)
+                            getFragmentManager().findFragmentByTag(COMMENTS_FRAGMENT);
 
-            if (mFrag != null && mFrag.equals("comments")) {
-                mKFCommentsFragment = (KFCommentsListFragment)
-                        getFragmentManager().findFragmentByTag("KFCommentsListFragment");
+                    lastFragment = mKFCommentsFragment;
+                }
+                else if (mAttachedFragment.equals(SUBMISSIONS_FRAGMENT)) {
+                    mKFSubmissionsListFragment = (KFSubmissionsListFragment)
+                            getFragmentManager().findFragmentByTag(SUBMISSIONS_FRAGMENT);
 
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, mKFCommentsFragment)
-                        .addToBackStack(null)
-                        .commit();
+                    lastFragment = mKFSubmissionsListFragment;
+                }
+            } else {
+                throw new IllegalStateException("unrecognized fragment name");
             }
+        }
+
+        if (lastFragment != null) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, lastFragment)
+                    .addToBackStack(null)
+                    .commit();
         } else {
-            mFrag = "submissions";
+            // default submission list
+            mAttachedFragment = SUBMISSIONS_FRAGMENT;
             mKFSubmissionsListFragment = new KFSubmissionsListFragment();
         }
     }
@@ -89,9 +116,6 @@ public class KFMain extends Activity
 
         setTitle(mSubredditName);
 
-        Log.d("TAG", "Position selection is: " + position);
-        Log.d("TAG", "mSubredditName is: " + mSubredditName);
-
         fragmentManager.beginTransaction()
                 .replace(R.id.container, KFSubmissionsListFragment.newInstance((String) mSubredditName))
                 .commit();
@@ -100,28 +124,13 @@ public class KFMain extends Activity
     @Override
     public void onSubmissionSelected(String id) {
 
-        mFrag = "comments";
-        FragmentManager fragmentManager = getFragmentManager();
-
-        fragmentManager.beginTransaction()
+        // attached comments view
+        mAttachedFragment = COMMENTS_FRAGMENT;
+        getFragmentManager().beginTransaction()
                 .replace(R.id.container, KFCommentsListFragment.newInstance(id),"KFCommentsListFragment")
                 .addToBackStack(null)   
                 .commit();
     }
-
-    //    public void onSectionAttached(int number) {
-//        switch (number) {
-//            case 1:
-//                mSubredditName = getString(R.string.title_section1);
-//                break;
-//            case 2:
-//                mSubredditName = getString(R.string.title_section2);
-//                break;
-//            case 3:
-//                mSubredditName = getString(R.string.title_section3);
-//                break;
-//        }
-//    }
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
@@ -159,6 +168,8 @@ public class KFMain extends Activity
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("fragmentName", mFrag);
+
+        // save current attached fragment
+        outState.putString("attachedFragment", mAttachedFragment);
     }
 }

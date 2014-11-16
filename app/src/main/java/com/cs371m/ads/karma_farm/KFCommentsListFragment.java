@@ -82,9 +82,14 @@ public class KFCommentsListFragment extends ListFragment {
                     // handler here.
                     mHandler.post(new Runnable(){
                         public void run(){
-                            mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments);
-                            setListAdapter(mAdapter);
-                            spinner.setVisibility(View.GONE);
+                            try {
+                                mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments);
+                                setListAdapter(mAdapter);
+                                spinner.setVisibility(View.GONE);
+                            } catch (NullPointerException e) {
+                                // this happens when activity is destroyed during load
+                                Log.d(TAG, "NPE after load. Attempt to fail gracefully");
+                            }
                         }
                     });
 
