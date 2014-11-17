@@ -20,7 +20,7 @@ public class KFCommentsRequester {
     private static final String ENDPOINT = "/comments";
 
 
-    private String mSubmissionId;
+    protected String mSubmissionId;
     private String mUrl;
 
     public KFCommentsRequester(String id) {

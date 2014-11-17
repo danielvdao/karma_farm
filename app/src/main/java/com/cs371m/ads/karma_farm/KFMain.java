@@ -22,12 +22,15 @@ public class KFMain extends Activity
         implements KFNavigationDrawerFragment.NavigationDrawerCallbacks, KFSubmissionsListFragment.OnSubmissionSelectedListener {
 
     private static final String TAG = "KFMain";
-    private static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
-    private static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
-    private static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
+    public static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
+    public static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
+    public static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
+
+    public KFSubmissionsListFragment mKFSubmissionsListFragment;
+    public KFCommentsListFragment mKFCommentsFragment;
 
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
-    private String mAttachedFragment;
+    private boolean firstTime; // TODO FIX THIS
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -39,10 +42,8 @@ public class KFMain extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav_bar);
 
-        KFSubmissionsListFragment mKFSubmissionsListFragment;
-        KFCommentsListFragment mKFCommentsFragment;
-
-        Fragment lastFragment = null;
+        mKFSubmissionsListFragment = new KFSubmissionsListFragment();
+        mKFCommentsFragment = new KFCommentsListFragment();
 
         mNavigationDrawerFragment = (KFNavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -54,43 +55,37 @@ public class KFMain extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        if (savedInstanceState != null) {
-            mAttachedFragment = savedInstanceState.getString("attachedFragment");
-            if (mAttachedFragment != null) {
-                // attach last fragment before config change
-                if (mAttachedFragment.equals(COMMENTS_FRAGMENT)) {
-                    mKFCommentsFragment = (KFCommentsListFragment)
-                            getFragmentManager().findFragmentByTag(COMMENTS_FRAGMENT);
-
-                    lastFragment = mKFCommentsFragment;
-                }
-                else if (mAttachedFragment.equals(SUBMISSIONS_FRAGMENT)) {
-                    mKFSubmissionsListFragment = (KFSubmissionsListFragment)
-                            getFragmentManager().findFragmentByTag(SUBMISSIONS_FRAGMENT);
-
-                    lastFragment = mKFSubmissionsListFragment;
-                }
-            } else {
-                throw new IllegalStateException("unrecognized fragment name");
-            }
-        }
+        Fragment lastFragment = getFragmentManager().findFragmentById(R.id.container);
 
         if (lastFragment != null) {
+
+            Log.d(TAG, "reattaching " + lastFragment.toString());
+
+            // don't add old submissions to backstack
+            if(lastFragment instanceof KFCommentsListFragment) {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, lastFragment)
+                        .commit();
+            }
+            else if(lastFragment instanceof KFSubmissionsListFragment) {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, lastFragment)
+                        .commit();
+            }
+        } else {
+            firstTime = true;
             getFragmentManager().beginTransaction()
-                    .replace(R.id.container, lastFragment)
+                    .replace(R.id.container, KFSubmissionsListFragment.newInstance("frontpage")
+                            , SUBMISSIONS_FRAGMENT)
                     .addToBackStack(null)
                     .commit();
-        } else {
-            // default submission list
-            mAttachedFragment = SUBMISSIONS_FRAGMENT;
-            mKFSubmissionsListFragment = new KFSubmissionsListFragment();
         }
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
+
+        Log.d(TAG, "drawer item selected");
 
         switch (position) {
             case 0:
@@ -114,9 +109,11 @@ public class KFMain extends Activity
 
         }
 
+
         setTitle(mSubredditName);
 
-        fragmentManager.beginTransaction()
+        // update the main content by replacing fragments
+        getFragmentManager().beginTransaction()
                 .replace(R.id.container, KFSubmissionsListFragment.newInstance((String) mSubredditName))
                 .commit();
     }
@@ -124,10 +121,10 @@ public class KFMain extends Activity
     @Override
     public void onSubmissionSelected(String id) {
 
+        Log.d(TAG, "submission selected");
         // attached comments view
-        mAttachedFragment = COMMENTS_FRAGMENT;
         getFragmentManager().beginTransaction()
-                .replace(R.id.container, KFCommentsListFragment.newInstance(id),"KFCommentsListFragment")
+                .replace(R.id.container, KFCommentsListFragment.newInstance(id), COMMENTS_FRAGMENT)
                 .addToBackStack(null)   
                 .commit();
     }
@@ -136,7 +133,12 @@ public class KFMain extends Activity
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mSubredditName);
+        if(!firstTime)
+            actionBar.setTitle(mSubredditName);
+        else {
+            actionBar.setTitle("frontpage");
+            firstTime = false;
+        }
     }
 
 
@@ -173,11 +175,4 @@ public class KFMain extends Activity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // save current attached fragment
-        outState.putString("attachedFragment", mAttachedFragment);
-    }
 }
