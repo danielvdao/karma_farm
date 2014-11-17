@@ -20,14 +20,14 @@ import static android.content.Intent.getIntent;
 
 public class KFCommentsListFragment extends ListFragment {
 
-    KFCommentsListAdapter mAdapter;
-    Handler mHandler;
-    List<KFComment> mComments;
-    KFCommentsRequester mCommentsRequester;
+    private KFCommentsListAdapter mAdapter;
+    private Handler mHandler;
+    private List<KFComment> mComments;
+    private KFCommentsRequester mCommentsRequester;
     private ProgressBar spinner;
 
     private static final String ARG_SUBREDDIT = "subreddit";
-    private static final String TAG = "KFSubmissionsListFragment";
+    private static final String TAG = "KFCommentsListFragment";
 
     public KFCommentsListFragment(){
         mHandler = new Handler();
@@ -36,8 +36,12 @@ public class KFCommentsListFragment extends ListFragment {
     public static Fragment newInstance(String id){
 
         KFCommentsListFragment commentsFragment = new KFCommentsListFragment();
-        commentsFragment.mCommentsRequester = new KFCommentsRequester(id);
 
+        Bundle args = new Bundle();
+        args.putString("submissionId", id);
+        commentsFragment.setArguments(args);
+
+        commentsFragment.mCommentsRequester = new KFCommentsRequester(args.getString("submissionId"));
         return commentsFragment;
     }
 
@@ -45,6 +49,7 @@ public class KFCommentsListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
         mComments = new ArrayList<KFComment>();
     }
 
@@ -77,6 +82,7 @@ public class KFCommentsListFragment extends ListFragment {
             new Thread(){
                 public void run(){
                     mComments = mCommentsRequester.requestComments();
+
                     // UI elements should be accessed only in
                     // the primary thread, so we must use the
                     // handler here.
@@ -96,10 +102,10 @@ public class KFCommentsListFragment extends ListFragment {
                 }
             }.start();
         } else {
+            Log.d(TAG, "using old list");
             mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments);
             setListAdapter(mAdapter);
             spinner.setVisibility(View.GONE);
         }
     }
-
 }

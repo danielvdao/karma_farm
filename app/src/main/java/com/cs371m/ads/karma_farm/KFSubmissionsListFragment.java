@@ -31,6 +31,7 @@ public class KFSubmissionsListFragment extends ListFragment {
     private static final String TAG = "KFSubmissionsListFragment";
 
     public KFSubmissionsListFragment(){
+
         mHandler = new Handler();
         mKFSubmissions = new ArrayList<KFSubmission>();
     }
@@ -98,36 +99,40 @@ public class KFSubmissionsListFragment extends ListFragment {
         // This should run only once for the fragment as the
         // setRetainInstance(true) method has been called on
         // this fragment
-        Log.d(TAG, "initializing list");
+        Log.d(TAG, "requesting submissions list");
         spinner = (ProgressBar) getView().findViewById(R.id.submissions_progress_bar);
         spinner.setVisibility(View.VISIBLE);
 
-        if(mKFSubmissions.size()==0){
+        if(mKFSubmissions.size() == 0){
 
             // Must execute network tasks outside the UI
             // thread. So create a new thread.
             new Thread(){
                 public void run(){
-                    Log.d(TAG, "Thread.run()");
-                    mKFSubmissions.addAll(mKFSubmissionsRequester.requestSubmissionList());
-                    Log.d(TAG, "Thread.run() fetched " + mKFSubmissions.size() + " posts");
-                    // UI elements should be accessed only in
-                    // the primary thread, so we must use the
-                    // handler here.
-                    Log.d(TAG, "before post");
+                    try {
+                        mKFSubmissions.addAll(mKFSubmissionsRequester.requestSubmissionList());
+                        // UI elements should be accessed only in
+                        // the primary thread, so we must use the
+                        // handler here.
+                    } catch (NullPointerException e) {
+                        Log.d(TAG, "NPE adapting array during load. Attempt to fail gracefully");
+                    }
                     mHandler.post(new Runnable(){
                         public void run(){
-                            Log.d(TAG, "mHandler.run()");
-                            mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
-                            setListAdapter(mAdapter);
-                            spinner.setVisibility(View.GONE);
+                            try {
+                                mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
+                                setListAdapter(mAdapter);
+                                spinner.setVisibility(View.GONE);
+                            } catch (NullPointerException e) {
+                                // this happens when activity is destroyed during load
+                                Log.d(TAG, "NPE after load. Attempt to fail gracefully");
+                            }
                         }
                     });
-
                 }
             }.start();
         } else {
-            Log.d(TAG, "in initialize() else block");
+            Log.d(TAG, "using old list");
             mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
             setListAdapter(mAdapter);
             spinner.setVisibility(View.GONE);
