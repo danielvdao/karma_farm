@@ -15,10 +15,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
-//
-//import org.codehaus.jackson.JsonFactory;
-//import org.codehaus.jackson.JsonParser;
-//import org.codehaus.jackson.JsonToken;
+
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 
 
 import android.util.Log;
@@ -60,7 +60,6 @@ public class KFLoginTask extends AsyncTask<Void, Void, Boolean> {
     *
     *  @return Error message, or null on success
     * */
-
     private boolean doLogin(String username, String password, HttpClient client, Context context) {
         String status = "";
         String userError = "A login error has occurred, please try again.";
@@ -96,32 +95,32 @@ public class KFLoginTask extends AsyncTask<Void, Void, Boolean> {
             in.close();
             entity.consumeContent();
 
-            // Failed login attempt from what it seems
-           // if (StringUtils.isEmpty(line)){
-           //     throw new HttpException("No content returned from login POST");
-           // }
+//            Failed login attempt from what it seems
+//           if (StringUtils.isEmpty(line)){
+//                throw new HttpException("No content returned from login POST");
+//           }
 
             if (line.equals("")){
                 throw new HttpException("No content returned from login POST");
             }
 
-//            final JsonFactory jsonFactory = new JsonFactory();
-//            final JsonParser jp = jsonFactory.createJsonParser(line);
+            final JsonFactory jsonFactory = new JsonFactory();
+            final JsonParser jp = jsonFactory.createJsonParser(line);
 
-//            while (jp.nextToken() != JsonToken.FIELD_NAME){
-//                if (jp.nextToken() != JsonToken.START_ARRAY)
-//                    throw new IllegalStateException("Login: expecting errors START_ARRAY");
-//                if (jp.nextToken() != JsonToken.END_ARRAY){
-//                    if (line.contains("WRONG_PASSWORD")){
-//                        userError = "Bad password.";
-//                        throw new Exception("Wrong password.");
-//                    }
-//
-//                    else {
-//                        throw new Exception(line);
-//                    }
-//                }
-//            }
+            while (jp.nextToken() != JsonToken.FIELD_NAME){
+                if (jp.nextToken() != JsonToken.START_ARRAY)
+                    throw new IllegalStateException("Login: expecting errors START_ARRAY");
+                if (jp.nextToken() != JsonToken.END_ARRAY){
+                    if (line.contains("WRONG_PASSWORD")){
+                        userError = "Bad password.";
+                        throw new Exception("Wrong password.");
+                    }
+
+                    else {
+                        throw new Exception(line);
+                    }
+                }
+            }
 
 
         } catch (Exception e) {
