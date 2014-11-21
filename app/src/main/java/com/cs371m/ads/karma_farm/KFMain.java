@@ -28,6 +28,7 @@ public class KFMain extends Activity
 
     public KFSubmissionsListFragment mKFSubmissionsListFragment;
     public KFCommentsListFragment mKFCommentsFragment;
+    public KFContentFragment mKFContentFragment;
 
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
     private boolean firstTime; // TODO FIX THIS
@@ -44,6 +45,7 @@ public class KFMain extends Activity
 
         mKFSubmissionsListFragment = new KFSubmissionsListFragment();
         mKFCommentsFragment = new KFCommentsListFragment();
+        mKFContentFragment = new KFContentFragment();
 
         mNavigationDrawerFragment = (KFNavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -121,11 +123,22 @@ public class KFMain extends Activity
     public void onSubmissionSelected(String id) {
 
         Log.d(TAG, "submission selected");
-        // attached comments view
+        // attach content view
         getFragmentManager().beginTransaction()
-                .replace(R.id.container, KFCommentsListFragment.newInstance(id), COMMENTS_FRAGMENT)
-                .addToBackStack(null)   
+                .replace(R.id.container, KFContentFragment.newInstance(id), CONTENT_FRAGMENT)
+                .addToBackStack(null)
                 .commit();
+
+        if (mKFContentFragment.getWebView() == null)
+            Log.d("webviewfragment", "webview is null");
+        else
+            mKFContentFragment.getWebView().loadUrl("http://www.google.com");
+
+        // attached comments view
+//        getFragmentManager().beginTransaction()
+//                .replace(R.id.container, KFCommentsListFragment.newInstance(id), COMMENTS_FRAGMENT)
+//                .addToBackStack(null)
+//                .commit();
     }
 
     public void restoreActionBar() {
