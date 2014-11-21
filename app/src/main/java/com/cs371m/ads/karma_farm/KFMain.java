@@ -79,7 +79,6 @@ public class KFMain extends Activity
             getFragmentManager().beginTransaction()
                     .replace(R.id.container, KFSubmissionsListFragment.newInstance("frontpage")
                             , SUBMISSIONS_FRAGMENT)
-                    .addToBackStack(null)
                     .commit();
         }
     }
