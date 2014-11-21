@@ -42,9 +42,6 @@ public class KFContentFragment extends Fragment {
             Log.d(TAG, "null uri");
     }
 
-    /**
-     * Called to instantiate the view. Creates and returns the WebView.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -78,10 +75,6 @@ public class KFContentFragment extends Fragment {
         return content;
     }
 
-    /**
-     * Convenience method for loading a url. Will fail if {@link View} is not initialised (but won't throw an {@link Exception})
-     * @param url
-     */
     public void loadUrl(String url) {
         if (mIsWebViewAvailable)
             getWebView().loadUrl(mUrl = url);
@@ -89,37 +82,24 @@ public class KFContentFragment extends Fragment {
             Log.d(TAG, "WebView cannot be found. Check the view and fragment have been loaded.");
     }
 
-    /**
-     * Called when the fragment is visible to the user and actively running. Resumes the WebView.
-     */
     @Override
     public void onPause() {
         super.onPause();
         mWebView.onPause();
     }
 
-    /**
-     * Called when the fragment is no longer resumed. Pauses the WebView.
-     */
     @Override
     public void onResume() {
         mWebView.onResume();
         super.onResume();
     }
 
-    /**
-     * Called when the WebView has been detached from the fragment.
-     * The WebView is no longer available after this time.
-     */
     @Override
     public void onDestroyView() {
         mIsWebViewAvailable = false;
         super.onDestroyView();
     }
 
-    /**
-     * Called when the fragment is no longer in use. Destroys the internal state of the WebView.
-     */
     @Override
     public void onDestroy() {
         if (mWebView != null) {
@@ -129,9 +109,6 @@ public class KFContentFragment extends Fragment {
         super.onDestroy();
     }
 
-    /**
-     * Gets the WebView.
-     */
     public WebView getWebView() {
         return mIsWebViewAvailable ? mWebView : null;
     }
