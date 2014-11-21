@@ -11,7 +11,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import android.content.Intent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -167,8 +169,10 @@ public class KFMain extends Activity
 
         if (id == R.id.action_login){
             // do login here
-
-            return true;
+            Toast.makeText(getApplicationContext(), "Do Login", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, KFLoginTask.class);
+            //start login intent based on login click
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

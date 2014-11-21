@@ -1,143 +1,113 @@
 package com.cs371m.ads.karma_farm;
 
-
-import android.content.Context;
-import android.os.AsyncTask;
-
-import org.apache.http.HttpException;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
-
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-
-
+import com.androauth.api.RedditApi;
+import com.androauth.oauth.OAuth20Request;
+import com.androauth.oauth.OAuth20Service;
+import com.androauth.oauth.OAuth20Token;
+import com.androauth.oauth.OAuthRequest;
+import com.androauth.oauth.OAuthRequest.OnRequestCompleteListener;
+import com.androauth.oauth.OAuthService;
+import com.twotoasters.android.hoot.HootResult;
+import com.androauth.oauth.OAuth20Service.OAuth20ServiceCallback;
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
-import java.util.ArrayList;
-import java.util.List;
-
-
-public class KFLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-    private static final String TAG = "LoginTask";
-    private static final String REDDIT_LOGIN_URL = "https://ssl.reddit.com/api/login";
-    protected String mUsername;
-    private String mPassword;
-    protected String mUserError = null;
-
-    private HttpClient mClient;
-    private Context mContext;
-
-    protected KFLoginTask(String username, String password, HttpClient client, Context context) {
-        mUsername = username;
-        mPassword = password;
-        mClient = client;
-        mContext = context;
-    }
+public class KFLoginTask extends Activity {
+    OAuth20Service service;
+    public final static String APIKEY = "2Q4Ul-I8YNTSlQ";
+    public static final String APISECRET = "yQpcp5uWSt_Z073GSGieCgqVxg8";
+    public final static String CALLBACK = "https://oauth.reddit";
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     @Override
-    public Boolean doInBackground(Void... v) {
-        return doLogin(mUsername, mPassword, mClient, mContext);
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+
+        //setContentView();
+
+        sharedPreferences = getPreferences(MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        Button button = (Button) findViewById(R.id.action_login);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v){
+                startAuthentication();
+            }
+        });
+
+
     }
 
-    /*
-    *  On success stores session cookie and modhash in your "RedditSettings"
-    *  On failure does not modify "RedditSettings".
-    *  Should be called from a background thread.
-    *
-    *  @return Error message, or null on success
-    * */
-    private boolean doLogin(String username, String password, HttpClient client, Context context) {
-        String status = "";
-        String userError = "A login error has occurred, please try again.";
-        HttpEntity entity = null;
-        try {
-            //Construct the data that we're going to use
 
-            List<NameValuePair> user_information = new ArrayList<NameValuePair>();
-            user_information.add(new BasicNameValuePair("user", username.toString()));
-            user_information.add(new BasicNameValuePair("password", password.toString()));
-            user_information.add(new BasicNameValuePair("api_type", "json"));
-
-            HttpPost httpPost = new HttpPost(REDDIT_LOGIN_URL);
-            httpPost.setEntity(new UrlEncodedFormEntity(user_information, HTTP.UTF_8));
-
-            HttpParams params = httpPost.getParams();
-                HttpConnectionParams.setConnectionTimeout(params, 45000);
-                HttpConnectionParams.setSoTimeout(params, 45000);
-
-            //Make the HTTP POST
-            HttpResponse response = client.execute(httpPost);
-            status = response.getStatusLine().toString();
-
-            // If the status doesn't return 200
-            if (!status.contains("OK")){
-                throw new HttpException(status);
+    private void startAuthentication(){
+        service = OAuthService.newInstance(new RedditApi(), APIKEY, APISECRET, new OAuth20ServiceCallback() {
+            @Override
+            public void onOAuthAccessTokenReceived(OAuth20Token token) {
+                editor.putString("access_token", token.getAccessToken());
+                editor.putString("refresh_token", token.getRefreshToken());
+                editor.commit();
+                getInfo(token);
             }
 
-            entity = response.getEntity();
+            @Override
+            public void onAccessTokenRequestFailed(HootResult hootResult) {
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(entity.getContent()));
-            String line = in.readLine();
-            in.close();
-            entity.consumeContent();
-
-//            Failed login attempt from what it seems
-//           if (StringUtils.isEmpty(line)){
-//                throw new HttpException("No content returned from login POST");
-//           }
-
-            if (line.equals("")){
-                throw new HttpException("No content returned from login POST");
             }
+        });
 
-            final JsonFactory jsonFactory = new JsonFactory();
-            final JsonParser jp = jsonFactory.createJsonParser(line);
-
-            while (jp.nextToken() != JsonToken.FIELD_NAME){
-                if (jp.nextToken() != JsonToken.START_ARRAY)
-                    throw new IllegalStateException("Login: expecting errors START_ARRAY");
-                if (jp.nextToken() != JsonToken.END_ARRAY){
-                    if (line.contains("WRONG_PASSWORD")){
-                        userError = "Bad password.";
-                        throw new Exception("Wrong password.");
-                    }
-
-                    else {
-                        throw new Exception(line);
-                    }
-                }
-            }
+        service.setApiCallback(CALLBACK);
+        service.setScope("identity");
+        service.setDuration("permanent");
+        getUserVerification();
 
 
-        } catch (Exception e) {
-            mUserError = userError;
-            if (entity != null) {
-                try {
-                    entity.consumeContent();
-                } catch (Exception e2) {
-                    Log.e(TAG, "entity.consumeContent()", e);
+    }
+
+    private void getUserVerification(){
+        final WebView webview = (WebView) findViewById(R.id.webview);
+        webview.getSettings().setJavaScriptEnabled(true);
+        webview.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url){
+                if (url.startsWith(CALLBACK)){
+                    webview.setVisibility(View.GONE);
+                    service.getOAuthAccessToken(url);
                 }
 
-                Log.e(TAG, "doLogin()", e);
+                return super.shouldOverrideUrlLoading(view, url);
+            }
+        });
+
+        webview.loadUrl(service.getAuthorizeUrl());
+    }
+
+    private void getInfo(OAuth20Token token){
+        OAuth20Request request = OAuthRequest.newInstance("https://oauth.reddit.com/api/v1/me", token, service, new OnRequestCompleteListener() {
+            @Override
+            public void onSuccess(HootResult hootResult) {
+                Log.v("into", "final on success: " + hootResult.getResponseString());
             }
 
-            return false;
+            @Override
+            public void onNewAccessTokenReceived(OAuth20Token oAuth20Token) {
 
-        }
-        return true;
+            }
+
+            @Override
+            public void onFailure(HootResult hootResult) {
+
+            }
+        });
+
+        request.get();
     }
 }
