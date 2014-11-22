@@ -19,5 +19,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".KFLoginTask"
+            android:label="KarmaFarmLoginTask">
+
+            </activity>
+
     </application>
 </manifest>
