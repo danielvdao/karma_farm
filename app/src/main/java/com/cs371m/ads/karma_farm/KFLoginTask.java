@@ -22,8 +22,8 @@ import android.widget.Button;
 public class KFLoginTask extends Activity{
 
     OAuth20Service service;
-    public final static String APIKEY = "B9yYaOVuYvxnRA";
-    public static final String APISECRET = "Q7LWINBuc-NmDMYlJDNr5CkW6YU";
+    public final static String APIKEY = "2Q4Ul-I8YNTSlQ";
+    public static final String APISECRET = "yQpcp5uWSt_Z073GSGieCgqVxg8";
     public final static String CALLBACK = "https://oauth.reddit";
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
