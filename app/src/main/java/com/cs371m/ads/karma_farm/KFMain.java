@@ -3,19 +3,27 @@ package com.cs371m.ads.karma_farm;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.view.LayoutInflater;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 
 import android.content.Intent;
-import java.util.HashMap;
-import java.util.Map;
+
 
 /**
  * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -27,6 +35,8 @@ public class KFMain extends Activity
     public static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
     public static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
     public static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
+
+    private static final int LOGIN_DIALOG = 0;
 
     public KFSubmissionsListFragment mKFSubmissionsListFragment;
     public KFCommentsListFragment mKFCommentsFragment;
@@ -167,15 +177,51 @@ public class KFMain extends Activity
             return true;
         }
 
-        if (id == R.id.action_login){
-            // do login here
-            Toast.makeText(getApplicationContext(), "Do Login", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, KFLoginTask.class);
-            //start login intent based on login click
-            startActivity(intent);
+        if (id == R.id.action_login) {
+            showDialog(LOGIN_DIALOG);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        Dialog dialog = null;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        switch (id) {
+            case LOGIN_DIALOG:
+                dialog = this.loginDialog(builder);
+                break;
+        }
+
+        return dialog;
+    }
+
+    private Dialog loginDialog(AlertDialog.Builder builder) {
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+
+        View loginView =inflater.inflate(R.layout.login_dialog, null);
+        builder.setMessage(R.string.login_message)
+                .setView(loginView)
+                .setCancelable(false)
+                .setPositiveButton(R.string.login,
+                        new DialogInterface.OnClickListener() {
+                            // get login info to pass to login task
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
+                                EditText username = (EditText) findViewById(R.id.username);
+                                intent.putExtra("username", username.getText());
+                                EditText password = (EditText) findViewById(R.id.password);
+                                intent.putExtra("password", password.getText());
+                                startActivity(intent);
+                            }
+                        })
+                .setNegativeButton(R.string.cancel, null);
+
+        return builder.create();
     }
 
 }

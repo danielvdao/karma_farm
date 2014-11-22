@@ -27,5 +27,11 @@
         android:layout_gravity="start"
         android:name="com.cs371m.ads.karma_farm.KFNavigationDrawerFragment"
         tools:layout="@layout/fragment_navigation_drawer" />
+    
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
 </android.support.v4.widget.DrawerLayout>

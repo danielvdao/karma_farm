@@ -27,6 +27,10 @@ public class KFLoginTask extends Activity {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
+    public KFLoginTask() {
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -46,7 +50,6 @@ public class KFLoginTask extends Activity {
 
 
     }
-
 
     private void startAuthentication(){
         service = OAuthService.newInstance(new RedditApi(), APIKEY, APISECRET, new OAuth20ServiceCallback() {
@@ -75,6 +78,7 @@ public class KFLoginTask extends Activity {
     private void getUserVerification(){
         final WebView webview = (WebView) findViewById(R.id.webview);
         webview.getSettings().setJavaScriptEnabled(true);
+
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url){
