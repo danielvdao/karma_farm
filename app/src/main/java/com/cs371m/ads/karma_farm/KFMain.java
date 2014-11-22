@@ -202,7 +202,7 @@ public class KFMain extends Activity
 
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        View loginView =inflater.inflate(R.layout.login_dialog, null);
+        final View loginView =inflater.inflate(R.layout.login_dialog, null);
         builder.setMessage(R.string.login_message)
                 .setView(loginView)
                 .setCancelable(false)
@@ -212,11 +212,20 @@ public class KFMain extends Activity
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
-                                EditText username = (EditText) findViewById(R.id.username);
-                                intent.putExtra("username", username.getText());
-                                EditText password = (EditText) findViewById(R.id.password);
-                                intent.putExtra("password", password.getText());
-                                startActivity(intent);
+                                EditText username = (EditText) loginView.findViewById(R.id.username);
+                                EditText password = (EditText) loginView.findViewById(R.id.password);
+
+                                //TODO Make an actual try/catch statement for when the user doesn't enter in a good password
+                                if (username.getText() == null || password.getText() == null) {
+                                    Log.d(TAG, "User hasn't entered anything");
+                                    Toast.makeText(getApplicationContext(), "Either the user/pw wasn't entered, please try again.", Toast.LENGTH_LONG).show();
+                                }
+
+                                else {
+                                    intent.putExtra("username", username.getText().toString());
+                                    intent.putExtra("password", password.getText().toString());
+                                    startActivity(intent);
+                                }
                             }
                         })
                 .setNegativeButton(R.string.cancel, null);
