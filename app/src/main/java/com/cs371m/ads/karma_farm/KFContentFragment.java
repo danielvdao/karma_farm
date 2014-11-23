@@ -32,12 +32,6 @@ public class KFContentFragment extends Fragment {
 
         mUrl = getArguments().getString("url");
 
-
-        final Activity activity = getActivity();
-
-        if (activity == null)
-            Log.d(TAG, "null activity found");
-
         if (mUrl == null || mUrl.equals(""))
             Log.d(TAG, "null uri");
     }
@@ -49,18 +43,23 @@ public class KFContentFragment extends Fragment {
         if (mWebView != null) {
             mWebView.destroy();
         }
+
+        // configure WebView
         mWebView = new WebView(getActivity());
+        mWebView.setWebViewClient(new InnerWebViewClient()); // forces it to open in app
+        mWebView.setScrollbarFadingEnabled(false);
+        mWebView.setHorizontalScrollBarEnabled(false);
+        mWebView.clearCache(true);
 
-        if (mWebView == null)
-            Log.d(TAG, "mWebView is null");
-        else
-            mIsWebViewAvailable = true;
+        WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setUserAgentString("AndroidWebView");
 
-        if (mUrl == null || mUrl.equals(""))
-            Log.d(TAG, "url is null");
 
-        if (mIsWebViewAvailable)
-            mWebView.loadUrl(mUrl);
+
+        mIsWebViewAvailable = true;
+        mWebView.loadUrl(mUrl);
 
         return mWebView;
     }
@@ -121,6 +120,15 @@ public class KFContentFragment extends Fragment {
             return true;
         }
 
+        @Override
+        public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+        // here show progress
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            // here dismiss progress
+        }
 
     }
 }

@@ -123,16 +123,12 @@ public class KFMain extends Activity
     public void onSubmissionSelected(String id) {
 
         Log.d(TAG, "submission selected");
+
         // attach content view
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, KFContentFragment.newInstance(id), CONTENT_FRAGMENT)
                 .addToBackStack(null)
                 .commit();
-
-        if (mKFContentFragment.getWebView() == null)
-            Log.d("webviewfragment", "webview is null");
-        else
-            mKFContentFragment.getWebView().loadUrl("http://www.google.com");
 
         // attached comments view
 //        getFragmentManager().beginTransaction()
