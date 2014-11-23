@@ -15,9 +15,7 @@ public class KFSubmission {
 
     String getDetails() {
         String details = author
-                + " posted this and got "
-                + numComments
-                + " replies";
+                + " posted in /r/" + subreddit + " with " + numComments + " replies";
         return details;
     }
 

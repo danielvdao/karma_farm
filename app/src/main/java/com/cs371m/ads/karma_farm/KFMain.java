@@ -77,7 +77,7 @@ public class KFMain extends Activity
         } else {
             firstTime = true;
             getFragmentManager().beginTransaction()
-                    .replace(R.id.container, KFSubmissionsListFragment.newInstance("frontpage")
+                    .replace(R.id.container, KFSubmissionsListFragment.newInstance("All")
                             , SUBMISSIONS_FRAGMENT)
                     .commit();
         }
@@ -144,7 +144,7 @@ public class KFMain extends Activity
         if(!firstTime)
             actionBar.setTitle(mSubredditName);
         else {
-            actionBar.setTitle("frontpage");
+            actionBar.setTitle("All");
             firstTime = false;
         }
     }
