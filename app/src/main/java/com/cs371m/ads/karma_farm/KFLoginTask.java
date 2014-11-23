@@ -25,6 +25,7 @@ public class KFLoginTask extends Activity{
     public final static String APIKEY = "2Q4Ul-I8YNTSlQ";
     public static final String APISECRET = "yQpcp5uWSt_Z073GSGieCgqVxg8";
     public final static String CALLBACK = "https://oauth.reddit";
+    private  static final String TAG = "KFLoginTask";
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
@@ -124,6 +125,8 @@ public class KFLoginTask extends Activity{
     }
 
     private void getInfo(OAuth20Token token){
+        Log.v(TAG,  token.getAccessToken().toString());
+        Log.v(TAG, "in get Info");
         OAuth20Request request = OAuthRequest.newInstance("https://oauth.reddit.com/api/v1/me",token, service, new OnRequestCompleteListener() {
 
             @Override
