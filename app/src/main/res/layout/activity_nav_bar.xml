@@ -28,4 +28,5 @@
         android:name="com.cs371m.ads.karma_farm.KFNavigationDrawerFragment"
         tools:layout="@layout/fragment_navigation_drawer" />
 
+
 </android.support.v4.widget.DrawerLayout>

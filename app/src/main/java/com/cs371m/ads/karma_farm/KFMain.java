@@ -11,6 +11,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -103,7 +109,7 @@ public class KFMain extends Activity
                 break;
             case 4:
                 mSubredditName = getString(R.string.title_section4);
-
+                break;
             case 5:
                 mSubredditName = getString(R.string.title_section5);
                 break;
@@ -147,6 +153,19 @@ public class KFMain extends Activity
             actionBar.setTitle("frontpage");
             firstTime = false;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //handle each potentially attached fragments back routine respectively here
+
+        // hide progress bar if we were looing at post
+        if (getFragmentManager().findFragmentByTag(CONTENT_FRAGMENT) != null) {
+            KFContentFragment fragment = (KFContentFragment) getFragmentManager().findFragmentById(R.id.container);
+            if (fragment != null && fragment.getTag().equals(CONTENT_FRAGMENT))
+                fragment.hideProgressBar();
+        }
+        super.onBackPressed();
     }
 
 
