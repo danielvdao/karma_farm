@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -26,19 +27,25 @@ public class KFSubmissionsListFragment extends ListFragment {
     KFSubmissionsRequester mKFSubmissionsRequester;
     OnSubmissionSelectedListener mListener;
     private ProgressBar spinner;
+    private ProgressBar refreshSpinner;
 
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionsListFragment";
+
+    private boolean mLoading;
 
     public KFSubmissionsListFragment(){
 
         mHandler = new Handler();
         mKFSubmissions = new ArrayList<KFSubmission>();
+        mLoading = false;
+
     }
 
     public static Fragment newInstance(String subreddit){
 
         KFSubmissionsListFragment listFragment = new KFSubmissionsListFragment();
+
 
         Bundle args = new Bundle();
         args.putString(ARG_SUBREDDIT, subreddit);
@@ -47,6 +54,12 @@ public class KFSubmissionsListFragment extends ListFragment {
         listFragment.mKFSubmissionsRequester = new KFSubmissionsRequester(listFragment.mSubreddit);
 
         return listFragment;
+    }
+
+    public void addMoreSubmissions(ArrayList<KFSubmission> more) {
+        mKFSubmissions.addAll(more);
+        mAdapter.notifyDataSetChanged();
+        mLoading = false;
     }
 
     @Override
@@ -67,6 +80,47 @@ public class KFSubmissionsListFragment extends ListFragment {
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstancesState) {
+        getListView().setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                if(firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount != 0) {
+                    if (!mLoading) {
+                        mLoading = true;
+                        new Thread() {
+                            public void run() {
+                                final ArrayList<KFSubmission> more = (ArrayList<KFSubmission>) mKFSubmissionsRequester.fetchMorePosts();
+
+                                mHandler.post(new Runnable() {
+                                    public void run() {
+                                        try {
+                                            addMoreSubmissions(more);
+                                        } catch (NullPointerException e) {
+                                            // this happens when activity is destroyed during load
+                                            Log.d(TAG, "NPE after load. Attempt to fail gracefully");
+                                        }
+                                    }
+                                });
+                            }
+                        }.start();
+
+
+                    }
+                }
+            }
+        });
+
+    }
+
+
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initialize();
@@ -80,6 +134,7 @@ public class KFSubmissionsListFragment extends ListFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
         try {
             mListener = (OnSubmissionSelectedListener) activity;
         } catch (ClassCastException e) {
@@ -93,6 +148,7 @@ public class KFSubmissionsListFragment extends ListFragment {
         KFSubmission sub = mKFSubmissions.get(position);
         mListener.onSubmissionSelected(sub.url);
     }
+
 
     private void initialize(){
         // This should run only once for the fragment as the
@@ -121,6 +177,7 @@ public class KFSubmissionsListFragment extends ListFragment {
                             try {
                                 mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
                                 setListAdapter(mAdapter);
+
                                 spinner.setVisibility(View.GONE);
                             } catch (NullPointerException e) {
                                 // this happens when activity is destroyed during load

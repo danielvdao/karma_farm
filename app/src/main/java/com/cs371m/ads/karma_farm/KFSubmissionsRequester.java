@@ -112,6 +112,4 @@ public class KFSubmissionsRequester {
 
         return result;
     }
-
-
 }
