@@ -92,7 +92,7 @@ public class KFSubmissionsRequester {
                 sub.domain = cur.optString("domain");
                 sub.id = cur.optString("id");
                 sub.thumb_url = cur.optString("thumbnail");
-                sub.thumb = BitmapFactory.decodeStream(new URL(sub.thumb_url).openConnection().getInputStream());
+//                sub.thumb = BitmapFactory.decodeStream(new URL(sub.thumb_url).openConnection().getInputStream());
 
                 if(sub.title != null)
                     result.add(sub);

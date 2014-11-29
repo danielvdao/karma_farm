@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="3dp" 
+        android:layout_marginLeft="3dp"
         android:layout_below="@id/post_title"
         android:layout_toRightOf="@id/thumb"
         android:textAppearance="?android:attr/textAppearanceSmall"

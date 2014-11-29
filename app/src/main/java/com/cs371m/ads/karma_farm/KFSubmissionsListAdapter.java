@@ -65,8 +65,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         holder.title.setText(submission.title);
         holder.details.setText(submission.getDetails());
         holder.score.setText(submission.getScore());
-
-        String url = submission.thumb_url;
         holder.thumb.setImageBitmap(submission.thumb);
 
         return row;
