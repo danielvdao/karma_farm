@@ -32,6 +32,7 @@
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_toRightOf="@id/passwordLabel"
-        android:layout_alignBaseline="@id/passwordLabel"/>
+        android:layout_alignBaseline="@id/passwordLabel"
+        android:password="true" />
 
 </RelativeLayout>

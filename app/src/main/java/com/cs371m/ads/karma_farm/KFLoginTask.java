@@ -19,7 +19,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
-public class KFLoginTask extends Activity{
+public class KFLoginTask extends Activity {
 
     OAuth20Service service;
     public final static String APIKEY = "2Q4Ul-I8YNTSlQ";
@@ -36,24 +36,27 @@ public class KFLoginTask extends Activity{
 
         sharedPreferences = getPreferences(MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                startAuthentication();
+        startAuthentication();
+//
+//        Button button = (Button) findViewById(R.id.button);
+//        button.setOnClickListener(new OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                startAuthentication();
+//
+//            }
+//        });
 
-            }
-        });
-
-        Button button2 = (Button) findViewById(R.id.button2);
-        button2.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                useExistingAuthentication();
-            }
-        });
+//        Button button2 = (Button) findViewById(R.id.button2);
+//        button2.setOnClickListener(new OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                useExistingAuthentication();
+//            }
+//        });
     }
 
     private void useExistingAuthentication(){
@@ -69,7 +72,8 @@ public class KFLoginTask extends Activity{
             @Override
             public void onAccessTokenRequestFailed(HootResult result) {
                 // TODO Auto-generated method stub
-
+                // show failure message in a textView in dialog box
+                // clear input fields
             }
         });
         String accessToken = sharedPreferences.getString("access_token", null);
@@ -125,13 +129,13 @@ public class KFLoginTask extends Activity{
     }
 
     private void getInfo(OAuth20Token token){
-        Log.v(TAG,  token.getAccessToken().toString());
+        Log.v(TAG,  "have token: " + token.getAccessToken());
         Log.v(TAG, "in get Info");
         OAuth20Request request = OAuthRequest.newInstance("https://oauth.reddit.com/api/v1/me",token, service, new OnRequestCompleteListener() {
 
             @Override
             public void onSuccess(HootResult result) {
-                Log.v("into","final on success: "+result.getResponseString());
+                Log.v("into", "final on success: " + result.getResponseString());
             }
 
             @Override

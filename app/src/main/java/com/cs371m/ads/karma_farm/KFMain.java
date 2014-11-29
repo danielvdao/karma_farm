@@ -178,7 +178,9 @@ public class KFMain extends Activity
         }
 
         if (id == R.id.action_login) {
-            showDialog(LOGIN_DIALOG);
+//            showDialog(LOGIN_DIALOG);
+            Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -202,7 +204,7 @@ public class KFMain extends Activity
 
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        final View loginView =inflater.inflate(R.layout.login_dialog, null);
+        final View loginView = inflater.inflate(R.layout.login_dialog, null);
         builder.setMessage(R.string.login_message)
                 .setView(loginView)
                 .setCancelable(false)
