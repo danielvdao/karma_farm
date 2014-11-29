@@ -1,10 +1,12 @@
 package com.cs371m.ads.karma_farm;
 
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class KFSubmissionsRequester {
     String mSubreddit;
     String mUrl;
     String mAfter;
+
 
     public KFSubmissionsRequester(String subreddit){
         mSubreddit = subreddit;
@@ -88,6 +91,8 @@ public class KFSubmissionsRequester {
                 sub.permalink = cur.optString("permalink");
                 sub.domain = cur.optString("domain");
                 sub.id = cur.optString("id");
+                sub.thumb_url = cur.optString("thumbnail");
+                sub.thumb = BitmapFactory.decodeStream(new URL(sub.thumb_url).openConnection().getInputStream());
 
                 if(sub.title != null)
                     result.add(sub);

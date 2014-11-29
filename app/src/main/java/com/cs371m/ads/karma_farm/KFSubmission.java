@@ -1,5 +1,7 @@
 package com.cs371m.ads.karma_farm;
 
+import android.graphics.Bitmap;
+
 public class KFSubmission {
 
     String subreddit;
@@ -9,6 +11,8 @@ public class KFSubmission {
     String url;
     String domain;
     String id;
+    String thumb_url;
+    Bitmap thumb;
 
     int points;
     int numComments;

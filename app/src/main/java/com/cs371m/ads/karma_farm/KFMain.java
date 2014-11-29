@@ -5,11 +5,9 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
@@ -17,12 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.Dialog;
-
 import android.content.Intent;
+
 
 
 /**
@@ -115,7 +110,7 @@ public class KFMain extends Activity
                 break;
             case 4:
                 mSubredditName = getString(R.string.title_section4);
-
+                break;
             case 5:
                 mSubredditName = getString(R.string.title_section5);
                 break;
@@ -159,6 +154,19 @@ public class KFMain extends Activity
             actionBar.setTitle("All");
             firstTime = false;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //handle each potentially attached fragments back routine respectively here
+
+        // hide progress bar if we were looing at post
+        if (getFragmentManager().findFragmentByTag(CONTENT_FRAGMENT) != null) {
+            KFContentFragment fragment = (KFContentFragment) getFragmentManager().findFragmentById(R.id.container);
+            if (fragment != null && fragment.getTag().equals(CONTENT_FRAGMENT))
+                fragment.hideProgressBar();
+        }
+        super.onBackPressed();
     }
 
 

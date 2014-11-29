@@ -8,11 +8,7 @@ public class KFComment {
     public int KFscore;
     public int depth;
 
-    public KFComment() {
-
-    }
-
-     public static class KFMoreComments extends KFComment{
+    public static class KFMoreComments extends KFComment{
 
     }
 }
