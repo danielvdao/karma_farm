@@ -91,8 +91,7 @@ public class KFSubmissionsListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         // Append the clicked item's row ID with the content provider Uri
         KFSubmission sub = mKFSubmissions.get(position);
-
-        mListener.onSubmissionSelected(sub.id);
+        mListener.onSubmissionSelected(sub.url);
     }
 
     private void initialize(){

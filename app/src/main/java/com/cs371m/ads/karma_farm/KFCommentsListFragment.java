@@ -41,7 +41,7 @@ public class KFCommentsListFragment extends ListFragment {
         args.putString("submissionId", id);
         commentsFragment.setArguments(args);
 
-        commentsFragment.mCommentsRequester = new KFCommentsRequester(args.getString("submissionId"));
+        commentsFragment.mCommentsRequester = new KFCommentsRequester(id);
         return commentsFragment;
     }
 
