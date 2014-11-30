@@ -3,13 +3,17 @@ package com.cs371m.ads.karma_farm;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,14 +32,17 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
     int mLayoutResourceId;
     List<KFSubmission> mData = null;
     Handler mHandler;
+    KFSubmissionsListFragment mCallingFragment;
 
-    public KFSubmissionsListAdapter(Context context, int layoutResourceId, List<KFSubmission> data) {
+    public KFSubmissionsListAdapter(Context context, int layoutResourceId, List<KFSubmission> data,
+                                    KFSubmissionsListFragment fragment) {
         super(context, layoutResourceId, data);
 
         mContext = context;
         mLayoutResourceId = layoutResourceId;
         mData = data;
         mHandler = new Handler();
+        mCallingFragment = fragment;
     }
 
     @Override
@@ -54,15 +61,12 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
             holder.title = (TextView)row.findViewById(R.id.post_title);
             holder.details = (TextView)row.findViewById(R.id.post_details);
             holder.thumb = (ImageView)row.findViewById(R.id.thumb);
+            holder.comment_button = (ImageButton)row.findViewById(R.id.commment_icon);
 
             holder.num_comments = (TextView)row
                     .findViewById(R.id.score_board)
                     .findViewById(R.id.comments)
                     .findViewById(R.id.num_comments);
-
-            if (holder.num_comments == null) {
-                Log.d(TAG, "null textview");
-            }
 
             row.setTag(holder);
 
@@ -73,11 +77,50 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         // grab submission from array
         KFSubmission submission = mData.get(position);
 
-        // set view up
-        holder.title.setText(submission.title);
+        // set textviews
         holder.details.setText(submission.getDetails());
         holder.score.setText(submission.getScore());
+        holder.title.setText(submission.title);
         holder.num_comments.setText(submission.getNumComments());
+
+
+        // configure clickable areas
+        Bundle bundle = new Bundle();
+        bundle.putString("url", submission.url);
+        holder.title.setTag(bundle);
+
+        holder.title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCallingFragment.onSubmissionClick(view);
+            }
+        });
+
+        bundle = new Bundle();
+        bundle.putString("id", submission.id);
+        holder.comment_button.setTag(bundle);
+
+        holder.comment_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCallingFragment.onSubmissionCommentsClick(view);
+            }
+        });
+
+
+        // change comment buttons hit area
+        Rect delegateArea = new Rect();
+        holder.comment_button.setEnabled(true);
+        holder.comment_button.getHitRect(delegateArea);
+        delegateArea.right += 100;
+        delegateArea.bottom += 100;
+
+        TouchDelegate touchDelegate = new TouchDelegate(delegateArea,
+                holder.comment_button);
+
+        if (View.class.isInstance(parent)) {
+            parent.setTouchDelegate(touchDelegate);
+        }
 
         // position number nicely
         if (submission.numComments > 999) {
@@ -106,5 +149,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         TextView title;
         TextView details;
         ImageView thumb;
+        ImageButton comment_button;
     }
 }

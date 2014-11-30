@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.app.AlertDialog;
@@ -24,7 +25,7 @@ import android.content.Intent;
  * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
  */
 public class KFMain extends Activity
-        implements KFNavigationDrawerFragment.NavigationDrawerCallbacks, KFSubmissionsListFragment.OnSubmissionSelectedListener {
+        implements KFNavigationDrawerFragment.NavigationDrawerCallbacks, KFSubmissionsListFragment.SubmissionListListener {
 
     private static final String TAG = "KFMain";
     public static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
@@ -48,6 +49,9 @@ public class KFMain extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setProgressBarIndeterminateVisibility(true);
         setContentView(R.layout.activity_nav_bar);
 
         mKFSubmissionsListFragment = new KFSubmissionsListFragment();
@@ -127,21 +131,25 @@ public class KFMain extends Activity
     }
 
     @Override
-    public void onSubmissionSelected(String id) {
+    public void onSubmissionSelected(String url) {
 
         Log.d(TAG, "submission selected");
 
         // attach content view
         getFragmentManager().beginTransaction()
-                .replace(R.id.container, KFContentFragment.newInstance(id), CONTENT_FRAGMENT)
+                .replace(R.id.container, KFContentFragment.newInstance(url), CONTENT_FRAGMENT)
                 .addToBackStack(null)
                 .commit();
 
-        // attached comments view
-//        getFragmentManager().beginTransaction()
-//                .replace(R.id.container, KFCommentsListFragment.newInstance(id), COMMENTS_FRAGMENT)
-//                .addToBackStack(null)
-//                .commit();
+
+    }
+
+    public void onSubmissionCommentsSelected(String id) {
+        // attach comments view
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, KFCommentsListFragment.newInstance(id), COMMENTS_FRAGMENT)
+                .addToBackStack(null)
+                .commit();
     }
 
     public void restoreActionBar() {

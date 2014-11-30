@@ -23,9 +23,8 @@ public class KFSubmissionsListFragment extends ListFragment {
     String mSubreddit;
     List<KFSubmission> mKFSubmissions;
     KFSubmissionsRequester mKFSubmissionsRequester;
-    OnSubmissionSelectedListener mListener;
+    SubmissionListListener mListener;
     private ProgressBar spinner;
-    private ProgressBar refreshSpinner;
 
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionsListFragment";
@@ -37,6 +36,14 @@ public class KFSubmissionsListFragment extends ListFragment {
         mHandler = new Handler();
         mKFSubmissions = new ArrayList<KFSubmission>();
         mLoading = false;
+
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
     }
 
@@ -58,13 +65,6 @@ public class KFSubmissionsListFragment extends ListFragment {
         mAdapter.notifyDataSetChanged();
         mLoading = false;
     }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
@@ -76,8 +76,12 @@ public class KFSubmissionsListFragment extends ListFragment {
         return v;
     }
 
+
     @Override
     public void onViewCreated(View view, Bundle savedInstancesState) {
+
+        getActivity().setProgressBarIndeterminateVisibility(false);
+
         getListView().setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -88,8 +92,12 @@ public class KFSubmissionsListFragment extends ListFragment {
             public void onScroll(AbsListView absListView, int firstVisibleItem,
                                  int visibleItemCount, int totalItemCount) {
                 if(firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount != 0) {
+
+
+
                     if (!mLoading) {
                         mLoading = true;
+                        getActivity().setProgressBarIndeterminateVisibility(true);
                         new Thread() {
                             public void run() {
                                 final ArrayList<KFSubmission> more = (ArrayList<KFSubmission>) mKFSubmissionsRequester.fetchMorePosts();
@@ -97,6 +105,7 @@ public class KFSubmissionsListFragment extends ListFragment {
                                 mHandler.post(new Runnable() {
                                     public void run() {
                                         try {
+                                            getActivity().setProgressBarIndeterminateVisibility(false);
                                             addMoreSubmissions(more);
                                         } catch (NullPointerException e) {
                                             // this happens when activity is destroyed during load
@@ -115,8 +124,6 @@ public class KFSubmissionsListFragment extends ListFragment {
 
     }
 
-
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -124,8 +131,9 @@ public class KFSubmissionsListFragment extends ListFragment {
     }
 
     // KFMain must implement this interface to handle list item click
-    public interface OnSubmissionSelectedListener {
-        public void onSubmissionSelected(String id);
+    public interface SubmissionListListener {
+        public void onSubmissionSelected(String url);
+        public void onSubmissionCommentsSelected(String id);
     }
 
     @Override
@@ -133,17 +141,23 @@ public class KFSubmissionsListFragment extends ListFragment {
         super.onAttach(activity);
 
         try {
-            mListener = (OnSubmissionSelectedListener) activity;
+            mListener = (SubmissionListListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnArticleSelectedListener");
         }
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        // Append the clicked item's row ID with the content provider Uri
-        KFSubmission sub = mKFSubmissions.get(position);
-        mListener.onSubmissionSelected(sub.url);
+    public void onSubmissionClick(View view) {
+        Bundle bundle = (Bundle) view.getTag();
+        String url = bundle.getString("url");
+        Log.d(TAG, "submission clicked");
+        mListener.onSubmissionSelected(url);
+    }
+    public void onSubmissionCommentsClick(View view) {
+        Bundle bundle = (Bundle) view.getTag();
+        String id = bundle.getString("id");
+        Log.d(TAG, "comments clicked");
+        mListener.onSubmissionCommentsSelected(id);
     }
 
     private void initialize(){
@@ -156,6 +170,7 @@ public class KFSubmissionsListFragment extends ListFragment {
 
         if(mKFSubmissions.size() == 0){
 
+            final KFSubmissionsListFragment fragment = this;
             // Must execute network tasks outside the UI
             // thread. So create a new thread.
             new Thread(){
@@ -168,10 +183,12 @@ public class KFSubmissionsListFragment extends ListFragment {
                     } catch (NullPointerException e) {
                         Log.d(TAG, "NPE adapting array during load. Attempt to fail gracefully");
                     }
+
                     mHandler.post(new Runnable(){
+
                         public void run(){
                             try {
-                                mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
+                                mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions, fragment);
                                 setListAdapter(mAdapter);
 
                                 spinner.setVisibility(View.GONE);
@@ -185,7 +202,7 @@ public class KFSubmissionsListFragment extends ListFragment {
             }.start();
         } else {
             Log.d(TAG, "using old list");
-            mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions);
+            mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions, this);
             setListAdapter(mAdapter);
             spinner.setVisibility(View.GONE);
         }
