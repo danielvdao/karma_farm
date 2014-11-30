@@ -13,9 +13,9 @@ public class KFSubmission {
     String id;
     String thumb_url;
     Bitmap thumb;
-
-    int score;
     int numComments;
+    int score;
+
 
     String getDetails() {
         String details = "authored by /u/" + author;
@@ -29,4 +29,6 @@ public class KFSubmission {
     String getScore(){
         return Integer.toString(score);
     }
+
+    String getNumComments() { return Integer.toString(numComments); }
 }

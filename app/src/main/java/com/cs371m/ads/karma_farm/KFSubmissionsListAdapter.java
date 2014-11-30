@@ -55,17 +55,40 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
             holder.details = (TextView)row.findViewById(R.id.post_details);
             holder.thumb = (ImageView)row.findViewById(R.id.thumb);
 
+            holder.num_comments = (TextView)row
+                    .findViewById(R.id.score_board)
+                    .findViewById(R.id.comments)
+                    .findViewById(R.id.num_comments);
+
+            if (holder.num_comments == null) {
+                Log.d(TAG, "null textview");
+            }
+
             row.setTag(holder);
 
         } else {
             holder = (SubmissionHolder)row.getTag();
         }
 
+        // grab submission from array
         KFSubmission submission = mData.get(position);
 
+        // set view up
         holder.title.setText(submission.title);
         holder.details.setText(submission.getDetails());
         holder.score.setText(submission.getScore());
+        holder.num_comments.setText(submission.getNumComments());
+
+        // position number nicely
+        if (submission.numComments > 999) {
+            holder.num_comments.setTranslationX(-30);
+        }
+        else if (submission.numComments > 99) {
+            holder.num_comments.setTranslationX(-20);
+        }
+        else if (submission.numComments > 9) {
+            holder.num_comments.setTranslationX(-10);
+        }
 
         // if no thumbnail remove the view
         if (submission.thumb != null)
@@ -79,6 +102,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
     static class SubmissionHolder {
         TextView score;
+        TextView num_comments;
         TextView title;
         TextView details;
         ImageView thumb;

@@ -44,7 +44,6 @@ public class KFSubmissionsListFragment extends ListFragment {
 
         KFSubmissionsListFragment listFragment = new KFSubmissionsListFragment();
 
-
         Bundle args = new Bundle();
         args.putString(ARG_SUBREDDIT, subreddit);
         listFragment.setArguments(args);
