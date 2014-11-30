@@ -40,8 +40,8 @@ public class KFCommentsListFragment extends ListFragment {
         Bundle args = new Bundle();
         args.putString("submissionId", id);
         commentsFragment.setArguments(args);
-
         commentsFragment.mCommentsRequester = new KFCommentsRequester(id);
+
         return commentsFragment;
     }
 

@@ -14,12 +14,11 @@ public class KFSubmission {
     String thumb_url;
     Bitmap thumb;
 
-    int points;
+    int score;
     int numComments;
 
     String getDetails() {
-        String details = author
-                + " posted in /r/" + subreddit + " with " + numComments + " replies";
+        String details = "authored by /u/" + author;
         return details;
     }
 
@@ -28,6 +27,6 @@ public class KFSubmission {
     }
 
     String getScore(){
-        return Integer.toString(points);
+        return Integer.toString(score);
     }
 }

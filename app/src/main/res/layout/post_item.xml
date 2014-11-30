@@ -12,40 +12,59 @@
         android:src="@drawable/placeholder"
         android:layout_alignParentLeft="true" />
 
-    <TextView
-        android:id="@+id/post_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:textColor="#336699"
-        android:layout_marginLeft="3dp"
-        android:layout_toRightOf="@id/thumb"
-        android:layout_alignTop="@id/thumb"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        />
-
-    <TextView
-        android:id="@+id/post_score"
+    <LinearLayout
+        android:id="@+id/score_board"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@id/post_title"
-        android:textColor="#ff5700"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        />
+        android:clickable="true"
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/post_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ff5700"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            />
+
+        <ImageButton
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:scaleType="fitXY"
+            android:paddingTop="5dp"
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_question_answer_grey600_48dp"
+            android:background="@null" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/post_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/score_board"
+        android:textColor="#336699"
+        android:layout_marginRight="25dp"
+        android:layout_marginLeft="5dp"
+        android:layout_gravity="left"
+        android:layout_toRightOf="@id/thumb"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        />
 
     <TextView
         android:id="@+id/post_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="3dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
         android:layout_below="@id/post_title"
         android:layout_toRightOf="@id/thumb"
+        android:layout_alignParentRight="true"
         android:textAppearance="?android:attr/textAppearanceSmall"
         />
+
 
 
 </RelativeLayout>

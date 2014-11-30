@@ -6,8 +6,6 @@ import java.util.List;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ListFragment;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -126,7 +124,7 @@ public class KFSubmissionsListFragment extends ListFragment {
         initialize();
     }
 
-    // KFMain must implement this interface
+    // KFMain must implement this interface to handle list item click
     public interface OnSubmissionSelectedListener {
         public void onSubmissionSelected(String id);
     }
@@ -148,7 +146,6 @@ public class KFSubmissionsListFragment extends ListFragment {
         KFSubmission sub = mKFSubmissions.get(position);
         mListener.onSubmissionSelected(sub.url);
     }
-
 
     private void initialize(){
         // This should run only once for the fragment as the

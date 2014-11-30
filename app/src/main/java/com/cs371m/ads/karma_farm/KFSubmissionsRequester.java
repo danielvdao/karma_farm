@@ -6,6 +6,7 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class KFSubmissionsRequester {
                 sub.title = cur.optString("title");
                 sub.url = cur.optString("url");
                 sub.numComments = cur.optInt("num_comments");
-                sub.points = cur.optInt("score");
+                sub.score = cur.optInt("score");
                 sub.author = cur.optString("author");
                 sub.subreddit = cur.optString("subreddit");
                 sub.permalink = cur.optString("permalink");
@@ -104,7 +105,12 @@ public class KFSubmissionsRequester {
 
         for(KFSubmission sub : result) {
             try {
-                sub.thumb = BitmapFactory.decodeStream(new URL(sub.thumb_url).openConnection().getInputStream());
+                if(!sub.thumb_url.equals(""))
+                    sub.thumb = BitmapFactory.decodeStream(new URL(sub.thumb_url).openConnection().getInputStream());
+                else
+                    sub.thumb = null;
+            } catch (MalformedURLException e) {
+                sub.thumb = null;
             } catch(Exception e){
                 Log.e("requestSubmissionList()", e.toString());
             }
