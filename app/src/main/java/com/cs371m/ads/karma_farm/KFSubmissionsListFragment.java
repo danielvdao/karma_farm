@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,8 @@ public class KFSubmissionsListFragment extends ListFragment {
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionsListFragment";
 
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private boolean mLoading;
 
     public KFSubmissionsListFragment(){
@@ -71,7 +74,18 @@ public class KFSubmissionsListFragment extends ListFragment {
                              Bundle savedInstanceState) {
 
         Log.d(TAG, "onCreateView");
+
         View v = inflater.inflate(R.layout.posts, container, false);
+
+        // Retrieve the SwipeRefreshLayout and ListView instances
+        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swiperefresh);
+
+        // BEGIN_INCLUDE (change_colors)
+        // Set the color scheme of the SwipeRefreshLayout by providing 4 color resource ids
+//        mSwipeRefreshLayout.setColorScheme(
+//                R.color.swipe_color_1, R.color.swipe_color_2,
+//                R.color.swipe_color_3, R.color.swipe_color_4);
+        // END_INCLUDE (change_colors)
 
         return v;
     }
@@ -79,6 +93,15 @@ public class KFSubmissionsListFragment extends ListFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstancesState) {
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+
+                initialize();
+            }
+        });
 
         getActivity().setProgressBarIndeterminateVisibility(false);
 
@@ -206,5 +229,7 @@ public class KFSubmissionsListFragment extends ListFragment {
             setListAdapter(mAdapter);
             spinner.setVisibility(View.GONE);
         }
+
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }
