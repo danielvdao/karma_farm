@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -53,7 +52,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
             holder.title = (TextView)row.findViewById(R.id.post_title);
             holder.details = (TextView)row.findViewById(R.id.post_details);
             holder.thumb = (ImageView)row.findViewById(R.id.thumb);
-            holder.comment_button = (ImageButton)row.findViewById(R.id.commment_icon);
+            holder.comment_button = (ImageButton)row.findViewById(R.id.comment_icon);
 
             holder.num_comments = (TextView)row
                     .findViewById(R.id.score_board)
