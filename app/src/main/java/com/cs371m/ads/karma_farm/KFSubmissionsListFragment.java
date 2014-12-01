@@ -14,10 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.ListView;
+import android.widget.AdapterView;
 import android.widget.ProgressBar;
 
-public class KFSubmissionsListFragment extends ListFragment {
+public class KFSubmissionsListFragment extends ListFragment implements SwipeVoteable {
 
     KFSubmissionsListAdapter mAdapter;
     Handler mHandler;
@@ -26,6 +26,7 @@ public class KFSubmissionsListFragment extends ListFragment {
     KFSubmissionsRequester mKFSubmissionsRequester;
     SubmissionListListener mListener;
     private ProgressBar spinner;
+    private HorizontalSwipeDetector swipeDetector;
 
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionsListFragment";
@@ -39,15 +40,13 @@ public class KFSubmissionsListFragment extends ListFragment {
         mHandler = new Handler();
         mKFSubmissions = new ArrayList<KFSubmission>();
         mLoading = false;
-
-
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-
+        swipeDetector = new HorizontalSwipeDetector(this);
     }
 
     public static Fragment newInstance(String subreddit){
@@ -63,11 +62,6 @@ public class KFSubmissionsListFragment extends ListFragment {
         return listFragment;
     }
 
-    public void addMoreSubmissions(ArrayList<KFSubmission> more) {
-        mKFSubmissions.addAll(more);
-        mAdapter.notifyDataSetChanged();
-        mLoading = false;
-    }
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
@@ -89,8 +83,6 @@ public class KFSubmissionsListFragment extends ListFragment {
 
         return v;
     }
-
-
     @Override
     public void onViewCreated(View view, Bundle savedInstancesState) {
 
@@ -138,14 +130,30 @@ public class KFSubmissionsListFragment extends ListFragment {
                                 });
                             }
                         }.start();
-
-
                     }
                 }
             }
         });
 
+        getListView().setOnTouchListener(swipeDetector);
+        AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+                                    long arg3) {
+                Log.d(TAG, "item clicked");
+                if (swipeDetector.swipeDetected()) {
+                    if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
+                        Log.d(TAG, "swipe right to left on " + position);
+
+                    } else {
+                        Log.d(TAG, "swipe left to right on " + position);
+                    }
+                }
+            }
+        };
+        getListView().setOnItemClickListener(listener);
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -155,10 +163,31 @@ public class KFSubmissionsListFragment extends ListFragment {
 
     // KFMain must implement this interface to handle list item click
     public interface SubmissionListListener {
+
         public void onSubmissionSelected(String url);
         public void onSubmissionCommentsSelected(String id);
     }
+    public void onUpVote() {
 
+    }
+
+    public void onDownVote() {
+
+    }
+
+    public void onSubmissionClick(View view) {
+        Bundle bundle = (Bundle) view.getTag();
+        String url = bundle.getString("url");
+        Log.d(TAG, "submission clicked");
+        mListener.onSubmissionSelected(url);
+    }
+
+    public void onSubmissionCommentsClick(View view) {
+        Bundle bundle = (Bundle) view.getTag();
+        String id = bundle.getString("id");
+        Log.d(TAG, "comments clicked");
+        mListener.onSubmissionCommentsSelected(id);
+    }
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -168,19 +197,6 @@ public class KFSubmissionsListFragment extends ListFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnArticleSelectedListener");
         }
-    }
-
-    public void onSubmissionClick(View view) {
-        Bundle bundle = (Bundle) view.getTag();
-        String url = bundle.getString("url");
-        Log.d(TAG, "submission clicked");
-        mListener.onSubmissionSelected(url);
-    }
-    public void onSubmissionCommentsClick(View view) {
-        Bundle bundle = (Bundle) view.getTag();
-        String id = bundle.getString("id");
-        Log.d(TAG, "comments clicked");
-        mListener.onSubmissionCommentsSelected(id);
     }
 
     private void initialize(){
@@ -231,5 +247,11 @@ public class KFSubmissionsListFragment extends ListFragment {
         }
 
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    public void addMoreSubmissions(ArrayList<KFSubmission> more) {
+        mKFSubmissions.addAll(more);
+        mAdapter.notifyDataSetChanged();
+        mLoading = false;
     }
 }

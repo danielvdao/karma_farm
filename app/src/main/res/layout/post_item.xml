@@ -3,7 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:clickable="false"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false"
+    android:focusableInTouchMode="false" >
 
     <ImageView
         android:id="@+id/thumb"
@@ -41,9 +45,9 @@
                 android:scaleType="fitXY"
                 android:paddingTop="5dp"
                 android:layout_gravity="right"
+                android:focusable="false"
                 android:src="@drawable/ic_question_answer_grey600_48dp"
-                android:background="@null"
-                android:filterTouchesWhenObscured="false" />
+                android:background="@null" />
 
             <TextView
                 android:id="@+id/num_comments"
@@ -75,8 +79,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_gravity="left"
-
             android:clickable="true"
+            android:focusable="false"
             android:textColor="#336699"
             android:textAppearance="?android:attr/textAppearanceSmall"
             />

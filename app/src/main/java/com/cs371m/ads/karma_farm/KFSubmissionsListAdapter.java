@@ -90,6 +90,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         bundle = new Bundle();
         bundle.putString("id", submission.id);
         holder.comment_button.setTag(bundle);
+        holder.comment_button.setFocusable(false) ;
 
         holder.comment_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +133,12 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         }
 
         return row;
+    }
+
+    @Override
+    public boolean isEnabled(int position)
+    {
+        return true;
     }
 
     static class SubmissionHolder {
