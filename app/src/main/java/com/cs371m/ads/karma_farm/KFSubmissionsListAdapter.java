@@ -2,9 +2,7 @@ package com.cs371m.ads.karma_farm;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,14 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 
 public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
@@ -41,8 +33,8 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         mContext = context;
         mLayoutResourceId = layoutResourceId;
         mData = data;
-        mHandler = new Handler();
         mCallingFragment = fragment;
+        mHandler = new Handler();
     }
 
     @Override

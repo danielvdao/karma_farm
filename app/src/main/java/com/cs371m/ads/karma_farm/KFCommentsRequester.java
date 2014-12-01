@@ -15,7 +15,6 @@ public class KFCommentsRequester {
     private static final String TAG = "KFCommentsRequester";
 
     private static final String HOST = "http://104.131.71.174";
-    private static final String PORT = "5000";
     private static final String CURRENT_API_VERSION = "/api/v0";
     private static final String ENDPOINT = "/comments";
 
@@ -29,7 +28,7 @@ public class KFCommentsRequester {
     }
 
     private void generateUrl() {
-        mUrl = HOST + ":" + PORT + CURRENT_API_VERSION + ENDPOINT + "/" + mSubmissionId;
+        mUrl = HOST + CURRENT_API_VERSION + ENDPOINT + "/" + mSubmissionId;
     }
 
 

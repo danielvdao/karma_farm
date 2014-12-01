@@ -43,7 +43,8 @@
                 android:paddingTop="5dp"
                 android:layout_gravity="right"
                 android:src="@drawable/ic_question_answer_grey600_48dp"
-                android:background="@null" />
+                android:background="@null"
+                android:filterTouchesWhenObscured="false" />
 
             <TextView
                 android:id="@+id/num_comments"

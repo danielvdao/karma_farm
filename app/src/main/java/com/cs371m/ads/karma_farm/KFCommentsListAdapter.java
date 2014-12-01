@@ -75,6 +75,14 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
             commentHolder.karma.setVisibility(View.GONE);
             commentHolder.KFscore.setVisibility(View.GONE);
             commentHolder.moreComments.setVisibility(View.VISIBLE);
+
+//            commentHolder.moreComments.setOnClickListener(new View.OnClickListener() {
+//
+//                @Override
+//                public void onClick(View view) {
+//                    mCallingFragment.onMoreCommentsSelected(view);
+//                }
+//            });
         }
 
         row.setPadding(30 * comment.depth, 0, 0, 0);
