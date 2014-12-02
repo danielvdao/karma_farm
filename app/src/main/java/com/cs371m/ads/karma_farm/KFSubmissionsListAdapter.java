@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -70,13 +72,21 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
         // set textviews
         holder.details.setText(submission.getDetails());
+
         holder.score.setText(submission.getScore());
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("canVoteUp", true);
+        bundle.putBoolean("canVoteDown", true);
+        bundle.putInt("originalValue", submission.score);
+        holder.score.setTag(bundle);
+
         holder.title.setText(submission.title);
         holder.num_comments.setText(submission.getNumComments());
 
 
         // configure clickable areas
-        Bundle bundle = new Bundle();
+        bundle = new Bundle();
+
         bundle.putString("url", submission.url);
         holder.title.setTag(bundle);
 
@@ -87,7 +97,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
             }
         });
 
-        bundle = new Bundle();
         bundle.putString("id", submission.id);
         holder.comment_button.setTag(bundle);
         holder.comment_button.setFocusable(false) ;

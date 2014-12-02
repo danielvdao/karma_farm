@@ -3,11 +3,16 @@ package com.cs371m.ads.karma_farm;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ListFragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.renderscript.Sampler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class KFSubmissionsListFragment extends ListFragment implements SwipeVoteable {
 
@@ -135,25 +141,156 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
             }
         });
 
+
+        // Vote by swipe setup
         getListView().setOnTouchListener(swipeDetector);
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+            public void onItemClick(AdapterView<?> arg0, View view, int position,
                                     long arg3) {
                 Log.d(TAG, "item clicked");
                 if (swipeDetector.swipeDetected()) {
+
+                    TextView scoreTextView = (TextView)view.findViewById(R.id.score_board)
+                            .findViewById(R.id.post_score);
+                    Bundle bundle = (Bundle) scoreTextView.getTag();
+                    boolean canVoteUp = bundle.getBoolean("canVoteUp");
+                    boolean canVoteDown = bundle.getBoolean("canVoteDown");
+                    int originalValue = bundle.getInt("originalValue");
+
+                    int score = Integer.parseInt(scoreTextView.getText().toString());
+
                     if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
-                        Log.d(TAG, "swipe right to left on " + position);
+                        if(score <= originalValue) {
+                            Log.d(TAG, "swipe right to left on " + position);
+
+                            int newScore = (score == originalValue) ? score + 1 : score + 2;
+
+                            scoreTextView.setText(Integer.toString(newScore));
+                            scoreTextView.setTextColor(Color.parseColor("#ff5700"));
+                            scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
+                                    R.style.boldText);
+                            flashOrange(view);
+                        }
 
                     } else {
-                        Log.d(TAG, "swipe left to right on " + position);
+                        if(score >= originalValue) {
+
+                            int newScore = (score == originalValue) ? score - 1 : score - 2;
+
+                            Log.d(TAG, "swipe left to right on " + position);
+                            scoreTextView.setText(Integer.toString(newScore));
+                            scoreTextView.setTextColor(Color.parseColor("#9494ff"));
+                            scoreTextView.setActivated(true);
+                            scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
+                                    R.style.boldText);
+                            flashBlue(view);
+                        }
                     }
+                    view.setTag(bundle);
                 }
             }
         };
         getListView().setOnItemClickListener(listener);
+
+        AdapterView.OnItemLongClickListener longListener = new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
+                                        long id) {
+
+                TextView scoreTextView = (TextView)view.findViewById(R.id.score_board)
+                        .findViewById(R.id.post_score);
+                Bundle bundle = (Bundle) scoreTextView.getTag();
+                int originalValue = bundle.getInt("originalValue");
+                int score = Integer.parseInt(scoreTextView.getText().toString());
+                if (score != originalValue){
+                    scoreTextView.setText(Integer.toString(originalValue));
+                    scoreTextView.setTextColor(Color.parseColor("#000000"));
+                    scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
+                            R.style.normalText);
+                    return true;
+                }
+                return false;
+            }
+        };
+        getListView().setOnItemLongClickListener(longListener);
     }
 
+    public void flashOrange(View view) {
+        final int orig = view.getSolidColor();
+        final float[] from = new float[3];
+        final float[] to = new float[3];
+
+        final View list_item = view;
+
+        Color.colorToHSV(Color.parseColor("#eeeeee"), from);   // from white
+        Color.colorToHSV(Color.parseColor("#ff8b60"), to);     // to orange
+
+        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);   // animate from 0 to 1
+        anim.setDuration(200);                              // for 300 ms
+
+        final float[] hsv  = new float[3];                  // transition color
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(){
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                // Transition along each axis of HSV (hue, saturation, value)
+                hsv[0] = from[0] + (to[0] - from[0])*animation.getAnimatedFraction();
+                hsv[1] = from[1] + (to[1] - from[1])*animation.getAnimatedFraction();
+                hsv[2] = from[2] + (to[2] - from[2])*animation.getAnimatedFraction();
+
+                list_item.setBackgroundColor(Color.HSVToColor(hsv));
+            }
+        });
+
+        anim.addListener(new AnimatorListenerAdapter()
+        {
+            @Override
+            public void onAnimationEnd(Animator animation)
+            {
+                list_item.setBackgroundColor(orig);
+            }
+        });
+
+        anim.start();
+
+    }
+
+    public void flashBlue(View view) {
+        final int orig = view.getSolidColor();
+        final float[] from = new float[3];
+        final float[] to = new float[3];
+
+        final View list_item = view;
+        Color.colorToHSV(Color.parseColor("#ffffff"), from);   // from white
+        Color.colorToHSV(Color.parseColor("#9494ff"), to);     // to blue
+
+        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);   // animate from 0 to 1
+        anim.setDuration(200);                              // for 300 ms
+
+        final float[] hsv  = new float[3];                  // transition color
+        hsv[0] = to[0];                                     // hold hue steady
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(){
+            @Override public void onAnimationUpdate(ValueAnimator animation) {
+                // Transition along each axis of HSV (hue, saturation, value)
+                hsv[1] = from[1] + (to[1] - from[1])*animation.getAnimatedFraction();
+                hsv[2] = from[2] + (to[2] - from[2])*animation.getAnimatedFraction();
+
+                list_item.setBackgroundColor(Color.HSVToColor(hsv));
+            }
+        });
+
+        anim.addListener(new AnimatorListenerAdapter()
+        {
+            @Override
+            public void onAnimationEnd(Animator animation)
+            {
+                list_item.setBackgroundColor(orig);
+            }
+        });
+
+        anim.start();
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
