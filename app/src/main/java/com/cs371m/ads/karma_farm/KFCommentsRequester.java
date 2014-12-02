@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class KFCommentsRequester {
@@ -72,7 +71,7 @@ public class KFCommentsRequester {
                         comment.author = cur.getString("author");
                         comment.text = cur.getString("text");
                         comment.KFscore = cur.getInt("rank");
-                        comment.karma = cur.getInt("score");
+                        comment.score = cur.getInt("score");
                         comment.depth = depth[0];
 
                         result.add(comment);

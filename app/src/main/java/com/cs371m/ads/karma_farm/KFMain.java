@@ -5,6 +5,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -40,6 +41,8 @@ public class KFMain extends Activity
 
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
     private boolean firstTime; // TODO FIX THIS
+    SharedPreferences mSharedPreferences;
+    SharedPreferences.Editor mEditor;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -53,6 +56,15 @@ public class KFMain extends Activity
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(true);
         setContentView(R.layout.activity_nav_bar);
+
+        mSharedPreferences = getPreferences(MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
+
+        if (mSharedPreferences.getString("username", null) != null)
+            Log.d(TAG, "have user: " + mSharedPreferences.getString("username", null));
+
+        if (mSharedPreferences.getString("password", null) != null)
+            Log.d(TAG, "with password: " + mSharedPreferences.getString("password", null));
 
         mKFSubmissionsListFragment = new KFSubmissionsListFragment();
         mKFCommentsFragment = new KFCommentsListFragment();
@@ -203,9 +215,9 @@ public class KFMain extends Activity
         }
 
         if (id == R.id.action_login) {
-//            showDialog(LOGIN_DIALOG);
-            Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
-            startActivity(intent);
+            showDialog(LOGIN_DIALOG);
+//            Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
+//            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -245,13 +257,15 @@ public class KFMain extends Activity
                                 //TODO Make an actual try/catch statement for when the user doesn't enter in a good password
                                 if (username.getText() == null || password.getText() == null) {
                                     Log.d(TAG, "User hasn't entered anything");
-                                    Toast.makeText(getApplicationContext(), "Either the user/pw wasn't entered, please try again.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "Please enter valid credentials.", Toast.LENGTH_LONG).show();
                                 }
 
                                 else {
-                                    intent.putExtra("username", username.getText().toString());
-                                    intent.putExtra("password", password.getText().toString());
-                                    startActivity(intent);
+                                      Toast.makeText(getApplicationContext(), "Validating credentials", Toast.LENGTH_LONG).show();
+//                                    tryLogin(username.getText().toString(), password.getText().toString());
+//                                    intent.putExtra("username", username.getText().toString());
+//                                    intent.putExtra("password", password.getText().toString());
+//                                    startActivity(intent);
                                 }
                             }
                         })

@@ -1,6 +1,5 @@
 package com.cs371m.ads.karma_farm;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,14 +16,8 @@ public class HorizontalSwipeDetector implements View.OnTouchListener {
 
     private static final String TAG = "HorizontalSwipeDetector";
     private static final int MIN_DISTANCE = 100;
-    private float downX, downY, upX, upY;
+    private float downX,upX;
     private Action mSwipeDetected = Action.None;
-
-    private SwipeVoteable mCallingFragment;
-
-    public HorizontalSwipeDetector(SwipeVoteable callingFragment) {
-        mCallingFragment = callingFragment;
-    }
 
     public boolean swipeDetected() {
         return mSwipeDetected != Action.None;
@@ -38,7 +31,6 @@ public class HorizontalSwipeDetector implements View.OnTouchListener {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 downX = event.getX();
-                downY = event.getY();
                 mSwipeDetected = Action.None;
                 return false; // allow other events like Click to be processed
             }
@@ -51,15 +43,11 @@ public class HorizontalSwipeDetector implements View.OnTouchListener {
                 if (Math.abs(deltaX) > MIN_DISTANCE) {
                     // left or right
                     if (deltaX < 0) {
-                        Log.d(TAG, "Swipe Left to Right");
                         mSwipeDetected = Action.LR;
-                        mCallingFragment.onDownVote();
                         return true;
                     }
                     if (deltaX > 0) {
-                        Log.d(TAG, "Swipe Right to Left");
                         mSwipeDetected = Action.RL;
-                        mCallingFragment.onUpVote();
                         return true;
                     }
                 }

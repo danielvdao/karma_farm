@@ -2,15 +2,14 @@ package com.cs371m.ads.karma_farm;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
+import android.graphics.Color;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-
-import org.json.JSONArray;
 
 import java.util.List;
 
@@ -35,8 +34,9 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
 
         View row = convertView;
         CommentHolder commentHolder;
+        KFComment comment = mData.get(position);
 
-        Class elem = mData.get(position).getClass();
+        Class clazz = comment.getClass();
 
         // if new row initialize child views, use a view we've scrolled past
         if (row == null) {
@@ -48,57 +48,69 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
 
             commentHolder.author = (TextView) row.findViewById(R.id.author);
             commentHolder.text = (TextView) row.findViewById(R.id.text);
-            commentHolder.karma = (TextView) row.findViewById(R.id.karma);
-            commentHolder.KFscore = (TextView) row.findViewById(R.id.score);
-            commentHolder.moreComments = (Button) row.findViewById(R.id.more_comments_button);
+            commentHolder.score = (TextView) row.findViewById(R.id.score);
+            commentHolder.KFscore = (TextView) row.findViewById(R.id.KFscore);
+
+            commentHolder.score.setText(Integer.toString(comment.score));
 
             row.setTag(commentHolder);
         } else {
             commentHolder = (CommentHolder) row.getTag();
+            if (comment.downVoted) {
+                commentHolder.score.setText(Integer.toString(comment.score - 1));
+                commentHolder.score.setTextColor(getContext().getResources().getColor(R.color.downvote));
+                commentHolder.score.setTextAppearance(getContext(),
+                        R.style.boldText);
+            }
+            else if (comment.upVoted) {
+                commentHolder.score.setText(Integer.toString(comment.score + 1));
+                commentHolder.score.setTextColor(getContext().getResources().getColor(R.color.upvote));
+                commentHolder.score.setTextAppearance(getContext(),
+                        R.style.boldText);
+            }
+            else {
+                commentHolder.score.setText(Integer.toString(comment.score));
+                commentHolder.score.setTextColor(Color.parseColor("#000000"));
+                commentHolder.score.setTextAppearance(getContext(),
+                        R.style.normalText);
+            }
         }
 
-        KFComment comment = mData.get(position);
+        commentHolder.author.setText(comment.author);
+        commentHolder.text.setText(comment.text);
 
-        if (elem != KFComment.KFMoreComments.class) {
-            commentHolder.author.setText(comment.author);
-            commentHolder.text.setText(comment.text);
-            commentHolder.karma.setText(Integer.toString(comment.karma));
-            commentHolder.KFscore.setText("Karma Potential: " + Integer.toString(comment.KFscore));
-            commentHolder.author.setVisibility(View.VISIBLE);
-            commentHolder.text.setVisibility(View.VISIBLE);
-            commentHolder.karma.setVisibility(View.VISIBLE);
-            commentHolder.KFscore.setVisibility(View.VISIBLE);
-            commentHolder.moreComments.setVisibility(View.GONE);
-        } else {
-            commentHolder.author.setVisibility(View.GONE);
-            commentHolder.text.setVisibility(View.GONE);
-            commentHolder.karma.setVisibility(View.GONE);
-            commentHolder.KFscore.setVisibility(View.GONE);
-            commentHolder.moreComments.setVisibility(View.VISIBLE);
+        Bundle bundle = new Bundle();
+        bundle.putInt("originalValue", comment.score);
+        commentHolder.score.setTag(bundle);
 
-//            commentHolder.moreComments.setOnClickListener(new View.OnClickListener() {
-//
-//                @Override
-//                public void onClick(View view) {
-//                    mCallingFragment.onMoreCommentsSelected(view);
-//                }
-//            });
-        }
+        commentHolder.KFscore.setText("Karma Potential: " + Integer.toString(comment.KFscore));
+        commentHolder.author.setVisibility(View.VISIBLE);
+        commentHolder.text.setVisibility(View.VISIBLE);
+        commentHolder.score.setVisibility(View.VISIBLE);
+        commentHolder.KFscore.setVisibility(View.VISIBLE);
 
         row.setPadding(30 * comment.depth, 0, 0, 0);
         row.setFocusable(false);
-        row.setEnabled(false);
-        row.setOnClickListener(null);
+        row.setEnabled(true);
         return row;
 
+    }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+        return true;
     }
 
     static class CommentHolder {
         TextView author;
         TextView text;
-        TextView karma;
+        TextView score;
         TextView KFscore;
-        Button moreComments;
     }
 
 

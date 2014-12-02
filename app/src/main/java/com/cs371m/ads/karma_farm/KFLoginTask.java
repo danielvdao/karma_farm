@@ -38,25 +38,6 @@ public class KFLoginTask extends Activity {
         editor = sharedPreferences.edit();
 
         startAuthentication();
-//
-//        Button button = (Button) findViewById(R.id.button);
-//        button.setOnClickListener(new OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                startAuthentication();
-//
-//            }
-//        });
-
-//        Button button2 = (Button) findViewById(R.id.button2);
-//        button2.setOnClickListener(new OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                useExistingAuthentication();
-//            }
-//        });
     }
 
     private void useExistingAuthentication(){
@@ -64,6 +45,9 @@ public class KFLoginTask extends Activity {
 
             @Override
             public void onOAuthAccessTokenReceived(OAuth20Token token) {
+                Log.d(TAG, "received token\naccess:" + token.getAccessToken()
+                        + "\n refresh: " + token.getRefreshToken());
+
                 editor.putString("access_token", token.getAccessToken());
                 editor.putString("refresh_token", token.getRefreshToken());
                 editor.commit();
@@ -90,6 +74,14 @@ public class KFLoginTask extends Activity {
                 editor.putString("access_token", token.getAccessToken());
                 editor.putString("refresh_token", token.getRefreshToken());
                 editor.commit();
+
+                Log.d(TAG, "received token\naccess:" + token.getAccessToken()
+                        + "\n refresh: " + token.getRefreshToken());
+
+                editor.putString("access_token", token.getAccessToken());
+                editor.putString("refresh_token", token.getRefreshToken());
+                editor.commit();
+
                 getInfo(token);
             }
 
@@ -118,7 +110,6 @@ public class KFLoginTask extends Activity {
                 if(url.startsWith(CALLBACK)) {
                     webview.setVisibility(View.GONE);
                     service.getOAuthAccessToken(url);
-
                 }
                 return super.shouldOverrideUrlLoading(view, url);
             }
@@ -140,6 +131,9 @@ public class KFLoginTask extends Activity {
 
             @Override
             public void onNewAccessTokenReceived(OAuth20Token token) {
+                editor.putString("access_token", token.getAccessToken());
+                editor.putString("refresh_token", token.getRefreshToken());
+                editor.commit();
             }
 
             @Override

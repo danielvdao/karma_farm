@@ -2,9 +2,12 @@ package com.cs371m.ads.karma_farm;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -42,15 +45,17 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View row = convertView;
-        SubmissionHolder holder;
+        final SubmissionHolder holder;
+        KFSubmission submission = mData.get(position);
 
-        // if new row initialize child views, use a view we've scrolled past
+        //if new row initialize child views, use a view we've scrolled past
         if(row == null) {
             LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
             row = inflater.inflate(mLayoutResourceId, parent, false);
 
             holder = new SubmissionHolder();
             holder.score = (TextView)row.findViewById(R.id.post_score);
+
             holder.title = (TextView)row.findViewById(R.id.post_title);
             holder.details = (TextView)row.findViewById(R.id.post_details);
             holder.thumb = (ImageView)row.findViewById(R.id.thumb);
@@ -65,18 +70,33 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
         } else {
             holder = (SubmissionHolder)row.getTag();
+            if (submission.downVoted) {
+                holder.score.setText(Integer.toString(submission.score - 1));
+                holder.score.setTextColor(getContext().getResources().getColor(R.color.downvote));
+                holder.score.setTextAppearance(getContext(),
+                        R.style.boldText);
+            }
+            else if (submission.upVoted) {
+                holder.score.setText(Integer.toString(submission.score + 1));
+                holder.score.setTextColor(getContext().getResources().getColor(R.color.upvote));
+                holder.score.setTextAppearance(getContext(),
+                        R.style.boldText);
+            }
+            else {
+                holder.score.setText(Integer.toString(submission.score));
+                holder.score.setTextColor(Color.parseColor("#000000"));
+                holder.score.setTextAppearance(getContext(),
+                        R.style.normalText);
+            }
         }
 
-        // grab submission from array
-        KFSubmission submission = mData.get(position);
-
         // set textviews
-        holder.details.setText(submission.getDetails());
 
-        holder.score.setText(submission.getScore());
+        if (!submission.upVoted && !submission.downVoted)
+            holder.score.setText(Integer.toString(submission.score));
+
+        holder.details.setText(submission.getDetails());
         Bundle bundle = new Bundle();
-        bundle.putBoolean("canVoteUp", true);
-        bundle.putBoolean("canVoteDown", true);
         bundle.putInt("originalValue", submission.score);
         holder.score.setTag(bundle);
 

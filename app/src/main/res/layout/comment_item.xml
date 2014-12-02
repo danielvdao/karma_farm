@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:padding="8dp"
+    android:focusable="false"
+    android:focusableInTouchMode="false" >
 
     <TextView
         android:id="@+id/author"
@@ -11,11 +15,11 @@
         android:paddingBottom="5dp"/>
 
     <TextView
-        android:id="@+id/karma"
+        android:id="@+id/score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ff5700"
-        android:textStyle="bold"
+        android:textColor="#000000"
+        android:textStyle="normal"
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -27,7 +31,7 @@
         android:layout_below="@id/author" />
 
     <TextView
-        android:id="@+id/score"
+        android:id="@+id/KFscore"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/text"
@@ -38,14 +42,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/score" />
-
-    <Button
-        android:id="@+id/more_comments_button"
-        android:layout_width="match_parent"
-        android:text="@string/load_more_comments"
-        android:textSize="8sp"
-        android:layout_height="25dp" />
-
-
 
 </RelativeLayout>

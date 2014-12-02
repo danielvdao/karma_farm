@@ -9,6 +9,8 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ListFragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +33,9 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
     List<KFSubmission> mKFSubmissions;
     KFSubmissionsRequester mKFSubmissionsRequester;
     SubmissionListListener mListener;
+    SharedPreferences mSharedPreferences;
+    SharedPreferences.Editor mEditor;
+
     private ProgressBar spinner;
     private HorizontalSwipeDetector swipeDetector;
 
@@ -52,7 +57,10 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        swipeDetector = new HorizontalSwipeDetector(this);
+        swipeDetector = new HorizontalSwipeDetector();
+
+        mSharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
     }
 
     public static Fragment newInstance(String subreddit){
@@ -72,7 +80,6 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-
         Log.d(TAG, "onCreateView");
 
         View v = inflater.inflate(R.layout.posts, container, false);
@@ -89,6 +96,7 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
 
         return v;
     }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstancesState) {
 
@@ -149,25 +157,25 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
             public void onItemClick(AdapterView<?> arg0, View view, int position,
                                     long arg3) {
                 Log.d(TAG, "item clicked");
+                KFSubmission submission = mKFSubmissions.get(position);
                 if (swipeDetector.swipeDetected()) {
 
                     TextView scoreTextView = (TextView)view.findViewById(R.id.score_board)
                             .findViewById(R.id.post_score);
-                    Bundle bundle = (Bundle) scoreTextView.getTag();
-                    boolean canVoteUp = bundle.getBoolean("canVoteUp");
-                    boolean canVoteDown = bundle.getBoolean("canVoteDown");
-                    int originalValue = bundle.getInt("originalValue");
+                    int originalValue = submission.score;
 
                     int score = Integer.parseInt(scoreTextView.getText().toString());
 
                     if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
                         if(score <= originalValue) {
-                            Log.d(TAG, "swipe right to left on " + position);
+                            Log.d(TAG, "upvote swipe on" + position);
+                            submission.upVoted = true;
+                            submission.downVoted = false;
 
                             int newScore = (score == originalValue) ? score + 1 : score + 2;
 
                             scoreTextView.setText(Integer.toString(newScore));
-                            scoreTextView.setTextColor(Color.parseColor("#ff5700"));
+                            scoreTextView.setTextColor(getResources().getColor(R.color.upvote));
                             scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
                                     R.style.boldText);
                             flashOrange(view);
@@ -175,20 +183,25 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
 
                     } else {
                         if(score >= originalValue) {
+                            Log.d(TAG, "downvote swipe on " + position);
+                            submission.upVoted = false;
+                            submission.downVoted = true;
 
                             int newScore = (score == originalValue) ? score - 1 : score - 2;
 
-                            Log.d(TAG, "swipe left to right on " + position);
                             scoreTextView.setText(Integer.toString(newScore));
-                            scoreTextView.setTextColor(Color.parseColor("#9494ff"));
+                            scoreTextView.setTextColor(getResources().getColor(R.color.downvote));
                             scoreTextView.setActivated(true);
                             scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
                                     R.style.boldText);
                             flashBlue(view);
                         }
                     }
-                    view.setTag(bundle);
                 }
+                else {
+                    onSubmissionClick(view);
+                }
+
             }
         };
         getListView().setOnItemClickListener(listener);
@@ -292,31 +305,32 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
         anim.start();
     }
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initialize();
     }
 
-    // KFMain must implement this interface to handle list item click
     public interface SubmissionListListener {
 
         public void onSubmissionSelected(String url);
         public void onSubmissionCommentsSelected(String id);
     }
-    public void onUpVote() {
 
-    }
-
-    public void onDownVote() {
-
-    }
 
     public void onSubmissionClick(View view) {
-        Bundle bundle = (Bundle) view.getTag();
-        String url = bundle.getString("url");
-        Log.d(TAG, "submission clicked");
-        mListener.onSubmissionSelected(url);
+        Bundle bundle = null;
+        try {
+            bundle = (Bundle) view.getTag();
+        } catch (ClassCastException e) {
+            bundle = (Bundle) view.findViewById(R.id.post_title).getTag();
+        }
+        if (bundle != null) {
+            String url = bundle.getString("url");
+            Log.d(TAG, "submission clicked");
+            mListener.onSubmissionSelected(url);
+        }
     }
 
     public void onSubmissionCommentsClick(View view) {
