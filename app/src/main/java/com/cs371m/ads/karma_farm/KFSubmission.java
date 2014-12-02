@@ -15,8 +15,9 @@ public class KFSubmission {
     Bitmap thumb;
     int numComments;
     int score;
-    boolean upVoted;
-    boolean downVoted;
+    boolean isUpVoted;
+    boolean isDownVoted;
+    boolean isNSFW;
 
 
     String getDetails() {

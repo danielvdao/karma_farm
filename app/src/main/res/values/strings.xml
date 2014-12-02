@@ -19,6 +19,7 @@
     <string name="login_message">Login</string>
     <string name="login">Login</string>
     <string name="cancel">Cancel</string>
+    <string name="nsfw">NSFW</string>
 
 
 </resources>

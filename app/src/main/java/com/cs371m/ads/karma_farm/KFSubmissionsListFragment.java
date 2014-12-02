@@ -1,8 +1,9 @@
 package com.cs371m.ads.karma_farm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -14,7 +15,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.renderscript.Sampler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,7 +41,6 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
 
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionsListFragment";
-
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private boolean mLoading;
@@ -103,9 +102,31 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+                if (!mLoading) {
+                    mLoading = true;
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    new Thread() {
+                        public void run() {
+                            final ArrayList<KFSubmission> more =
+                                    (ArrayList<KFSubmission>) mKFSubmissionsRequester.requestSubmissionList();
 
-                initialize();
+                            if (more.size() > 0) {
+                                mHandler.post(new Runnable() {
+                                    public void run() {
+                                        try {
+                                            addMoreSubmissionsToFront(more);
+                                            mSwipeRefreshLayout.setRefreshing(false);
+
+                                        } catch (NullPointerException e) {
+                                            // this happens when activity is destroyed during load
+                                            Log.d(TAG, "NPE after load. Attempt to fail gracefully");
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }.start();
+                }
             }
         });
 
@@ -131,17 +152,19 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
                             public void run() {
                                 final ArrayList<KFSubmission> more = (ArrayList<KFSubmission>) mKFSubmissionsRequester.fetchMorePosts();
 
-                                mHandler.post(new Runnable() {
-                                    public void run() {
-                                        try {
-                                            getActivity().setProgressBarIndeterminateVisibility(false);
-                                            addMoreSubmissions(more);
-                                        } catch (NullPointerException e) {
-                                            // this happens when activity is destroyed during load
-                                            Log.d(TAG, "NPE after load. Attempt to fail gracefully");
+                                if (more.size() > 0) {
+                                    mHandler.post(new Runnable() {
+                                        public void run() {
+                                            try {
+                                                getActivity().setProgressBarIndeterminateVisibility(false);
+                                                addMoreSubmissions(more);
+                                            } catch (NullPointerException e) {
+                                                // this happens when activity is destroyed during load
+                                                Log.d(TAG, "NPE after load. Attempt to fail gracefully");
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
                         }.start();
                     }
@@ -169,8 +192,8 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
                     if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
                         if(score <= originalValue) {
                             Log.d(TAG, "upvote swipe on" + position);
-                            submission.upVoted = true;
-                            submission.downVoted = false;
+                            submission.isUpVoted = true;
+                            submission.isDownVoted = false;
 
                             int newScore = (score == originalValue) ? score + 1 : score + 2;
 
@@ -184,8 +207,8 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
                     } else {
                         if(score >= originalValue) {
                             Log.d(TAG, "downvote swipe on " + position);
-                            submission.upVoted = false;
-                            submission.downVoted = true;
+                            submission.isUpVoted = false;
+                            submission.isDownVoted = true;
 
                             int newScore = (score == originalValue) ? score - 1 : score - 2;
 
@@ -210,7 +233,7 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
-                                        long id) {
+                                           long id) {
 
                 TextView scoreTextView = (TextView)view.findViewById(R.id.score_board)
                         .findViewById(R.id.post_score);
@@ -402,6 +425,27 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
 
     public void addMoreSubmissions(ArrayList<KFSubmission> more) {
         mKFSubmissions.addAll(more);
+        mAdapter.notifyDataSetChanged();
+        mLoading = false;
+    }
+
+    public void addMoreSubmissionsToFront(ArrayList<KFSubmission> more) {
+
+        HashSet<String> old_posts = new HashSet<String>();
+
+        for(KFSubmission sub : mKFSubmissions) {
+            old_posts.add(sub.title);
+        }
+
+        int i = 0;
+        for (KFSubmission sub : more) {
+            if (!old_posts.contains(sub.title)) {
+                Log.d(TAG, "found new post " + sub.title);
+                mAdapter.insert(sub, i++);
+            }
+        }
+        Log.d(TAG, "adding " + i + " posts to front");
+        Log.d(TAG, "looking at " + mKFSubmissions.size() + " posts");
         mAdapter.notifyDataSetChanged();
         mLoading = false;
     }

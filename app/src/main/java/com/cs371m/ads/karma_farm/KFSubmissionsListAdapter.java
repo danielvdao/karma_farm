@@ -6,14 +6,10 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -60,6 +56,11 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
             holder.details = (TextView)row.findViewById(R.id.post_details);
             holder.thumb = (ImageView)row.findViewById(R.id.thumb);
             holder.comment_button = (ImageButton)row.findViewById(R.id.comment_icon);
+            holder.nsfw = (TextView)row.findViewById(R.id.nsfw);
+
+            int nsfwVisibility = (submission.isNSFW) ? View.VISIBLE : View.GONE;
+
+            holder.nsfw.setVisibility(nsfwVisibility);
 
             holder.num_comments = (TextView)row
                     .findViewById(R.id.score_board)
@@ -70,13 +71,13 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
         } else {
             holder = (SubmissionHolder)row.getTag();
-            if (submission.downVoted) {
+            if (submission.isDownVoted) {
                 holder.score.setText(Integer.toString(submission.score - 1));
                 holder.score.setTextColor(getContext().getResources().getColor(R.color.downvote));
                 holder.score.setTextAppearance(getContext(),
                         R.style.boldText);
             }
-            else if (submission.upVoted) {
+            else if (submission.isUpVoted) {
                 holder.score.setText(Integer.toString(submission.score + 1));
                 holder.score.setTextColor(getContext().getResources().getColor(R.color.upvote));
                 holder.score.setTextAppearance(getContext(),
@@ -92,7 +93,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
         // set textviews
 
-        if (!submission.upVoted && !submission.downVoted)
+        if (!submission.isUpVoted && !submission.isDownVoted)
             holder.score.setText(Integer.toString(submission.score));
 
         holder.details.setText(submission.getDetails());
@@ -175,6 +176,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         TextView num_comments;
         TextView title;
         TextView details;
+        TextView nsfw;
         ImageView thumb;
         ImageButton comment_button;
     }

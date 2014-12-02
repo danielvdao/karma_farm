@@ -2,4 +2,5 @@
 <resources>
     <color name="upvote">#ff5700</color>
     <color name="downvote">#9494ff</color>
+    <color name="red">#FF0000</color>
 </resources>

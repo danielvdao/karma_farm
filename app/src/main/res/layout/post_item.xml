@@ -93,6 +93,17 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             />
 
-        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/nsfw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_text"
+        android:layout_alignLeft="@id/post_text"
+        android:textColor="@color/red"
+        android:text="@string/nsfw"
+        android:visibility="gone" />
 
 </RelativeLayout>

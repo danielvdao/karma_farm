@@ -62,13 +62,12 @@ public class KFSubmissionsRequester {
      *
      * @return
      */
-    List<KFSubmission> requestSubmissionList(){
+    List<KFSubmission> requestSubmissionList() {
         String raw = RemoteData.readContents(mUrl);
 
         List<KFSubmission> result = new ArrayList<KFSubmission>();
 
         try{
-
             JSONObject data = new JSONObject(raw).getJSONObject("data");
 
             JSONArray children = data.getJSONArray("children");
