@@ -1,6 +1,5 @@
 package com.cs371m.ads.karma_farm;
 
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
@@ -20,8 +19,6 @@ import android.widget.Toast;
 import android.app.AlertDialog;
 import android.content.Intent;
 
-
-
 /**
  * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
  */
@@ -32,6 +29,20 @@ public class KFMain extends Activity
     public static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
     public static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
     public static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
+
+    // TODO: move 
+    public static final String[] default_subs =
+            {"announcement", "Art", "AskReddit", "askscience", "aww", "blog",
+            "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
+            "EarthPorn", "explainlikeimfive", "Fitness", "food", "funny",
+            "Futurology", "gadgets", "gaming", "GetMotivated", "gifs",
+            "history", "IAmA", "InternetIsBeautiful", "Jokes", "LifeProTips",
+            "listentothis", "mildlyinteresting", "movies", "Music", "news",
+            "nosleep", "nottheonion", "oldschoolcool", "personalfinance",
+            "philosophy", "photoshopbattles", "pics", "science",
+            "Showerthoughts", "space", "sports", "television", "tifu",
+            "todayilearned", "TwoXChromosomes", "UpliftingNews", "videos",
+            "worldnews", "writingprompts"};
 
     public static final int LOGIN_DIALOG = 0;
     public static final int COMMENT_DIALOG = 1;
@@ -110,30 +121,8 @@ public class KFMain extends Activity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
 
-        Log.d(TAG, "drawer item selected");
-
-        switch (position) {
-            case 0:
-                mSubredditName = getString(R.string.title_section0);
-                break;
-            case 1:
-                mSubredditName = getString(R.string.title_section1);
-                break;
-            case 2:
-                mSubredditName = getString(R.string.title_section2);
-                break;
-            case 3:
-                mSubredditName = getString(R.string.title_section3);
-                break;
-            case 4:
-                mSubredditName = getString(R.string.title_section4);
-                break;
-            case 5:
-                mSubredditName = getString(R.string.title_section5);
-                break;
-
-        }
-
+        mSubredditName = default_subs[position];
+        Log.d(TAG, "Drawer item selected " + mSubredditName);
 
         setTitle(mSubredditName);
 
@@ -153,8 +142,6 @@ public class KFMain extends Activity
                 .replace(R.id.container, KFContentFragment.newInstance(url), CONTENT_FRAGMENT)
                 .addToBackStack(null)
                 .commit();
-
-
     }
 
     public void onSubmissionCommentsSelected(String id) {
