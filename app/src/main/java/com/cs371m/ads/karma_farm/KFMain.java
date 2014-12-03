@@ -39,8 +39,7 @@ public class KFMain extends Activity
     public static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
     public static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
     public static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
-
-    // TODO: move 
+    // TODO: move
     public static final String[] default_subs =
             {"announcement", "Art", "AskReddit", "askscience", "aww", "blog",
             "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
@@ -195,11 +194,23 @@ public class KFMain extends Activity
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.nav_bar, menu);
+
+            MenuItem loginItem = menu.findItem(R.id.action_login);
+            MenuItem logoutItem = menu.findItem(R.id.action_logout);
+            Log.d(TAG, "logged_in: " + mSharedPreferences.getInt("logged_in", 0));
+            if (mSharedPreferences.getInt("logged_in", 0) == 1){
+                loginItem.setVisible(false);
+                logoutItem.setVisible(true);
+            }
+
+            else{
+                loginItem.setVisible(true);
+                logoutItem.setVisible(false);
+            }
+
             restoreActionBar();
             return true;
         }
-
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -216,6 +227,15 @@ public class KFMain extends Activity
 
         if (id == R.id.action_login) {
             showDialog(LOGIN_DIALOG);
+        }
+
+        if (id == R.id.action_logout) {
+            mEditor.putString("username", null);
+            mEditor.putString("password", null);
+            mEditor.putInt("logged_in", 0);
+            mEditor.commit();
+            Toast.makeText(getApplicationContext(), "You have logged out.", Toast.LENGTH_LONG).show();
+            invalidateOptionsMenu();
         }
 
         return super.onOptionsItemSelected(item);
@@ -391,6 +411,8 @@ public class KFMain extends Activity
             catch (Exception ex){
                 Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened!", Toast.LENGTH_LONG).show();
             }
+
+            invalidateOptionsMenu();
 
 
         }
