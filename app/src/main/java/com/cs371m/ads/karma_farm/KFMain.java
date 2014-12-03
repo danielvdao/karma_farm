@@ -241,8 +241,13 @@ public class KFMain extends Activity
     public void vote(String id, String isSubmission, String action) {
         Log.d(TAG, "action : " + action);
 
-        new VotingTask().execute(mSharedPreferences.getString("username", null),
-                mSharedPreferences.getString("password", null), id, isSubmission, action);
+        if(mSharedPreferences.getInt("logged_in", 0) == 1) {
+            new VotingTask().execute(mSharedPreferences.getString("username", null),
+                    mSharedPreferences.getString("password", null), id, isSubmission, action);
+        }
+
+        else
+            Toast.makeText(getApplicationContext(), "Please login to vote.", Toast.LENGTH_LONG).show();
     }
 
     @Override
