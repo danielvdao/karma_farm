@@ -72,7 +72,7 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
                     String id = bundle.getString("id");
 
                     if (id != null) {
-                        mListFragment.postCommentDialog(id);
+                        mListFragment.postCommentDialog(bundle);
                     }
                 }
             });

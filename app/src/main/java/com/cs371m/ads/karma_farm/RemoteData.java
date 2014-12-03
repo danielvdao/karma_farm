@@ -32,7 +32,6 @@ public class RemoteData {
         return hcon;
     }
 
-
     /**
      * A very handy utility method that reads the contents of a URL
      * and returns them as a String.

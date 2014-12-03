@@ -239,7 +239,7 @@ public class KFMain extends Activity
     }
 
     @Override
-    protected Dialog onCreateDialog(int id) {
+    protected Dialog onCreateDialog(int id, Bundle args) {
         Dialog dialog = null;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -248,7 +248,8 @@ public class KFMain extends Activity
                 dialog = this.loginDialog(builder);
                 break;
             case COMMENT_DIALOG:
-                dialog = this.commentDialog(builder);
+                String comment_id = args.getString("id");
+                dialog = this.commentDialog(builder, comment_id);
                 break;
         }
 
@@ -288,7 +289,7 @@ public class KFMain extends Activity
         return builder.create();
     }
 
-    private Dialog commentDialog(AlertDialog.Builder builder) {
+    private Dialog commentDialog(AlertDialog.Builder builder, String id) {
 
         LayoutInflater inflater = LayoutInflater.from(this);
 
