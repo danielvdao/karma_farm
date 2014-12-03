@@ -33,7 +33,9 @@ import org.json.JSONObject;
  * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
  */
 public class KFMain extends Activity
-        implements KFNavigationDrawerFragment.NavigationDrawerCallbacks, KFSubmissionsListFragment.SubmissionListListener {
+        implements KFNavigationDrawerFragment.NavigationDrawerCallbacks,
+                   KFSubmissionsListFragment.SubmissionListListener,
+                   KFCommentsListFragment.CommentListListener {
 
     private static final String TAG = "KFMain";
     public static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
