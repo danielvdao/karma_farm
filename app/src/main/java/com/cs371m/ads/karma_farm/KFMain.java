@@ -39,8 +39,8 @@ public class KFMain extends Activity
     public static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
     public static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
     public static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
-    // TODO: move
-    public static final String[] default_subs =
+
+    public static final String[] DEFAULT_SUBS =
             {"announcement", "Art", "AskReddit", "askscience", "aww", "blog",
             "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
             "EarthPorn", "explainlikeimfive", "Fitness", "food", "funny",
@@ -130,7 +130,7 @@ public class KFMain extends Activity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
 
-        mSubredditName = default_subs[position];
+        mSubredditName = DEFAULT_SUBS[position];
         Log.d(TAG, "Drawer item selected " + mSubredditName);
 
         setTitle(mSubredditName);

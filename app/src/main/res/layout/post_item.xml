@@ -78,8 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_gravity="left"
-            android:clickable="true"
-            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:textColor="#336699"
             android:textAppearance="?android:attr/textAppearanceSmall"
             />
@@ -103,7 +102,6 @@
         android:layout_below="@id/post_text"
         android:layout_alignLeft="@id/post_text"
         android:textColor="@color/red"
-        android:text="@string/nsfw"
-        android:visibility="gone" />
+        android:text="@string/nsfw" />
 
 </RelativeLayout>

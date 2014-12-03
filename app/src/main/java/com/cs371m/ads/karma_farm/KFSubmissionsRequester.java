@@ -93,6 +93,13 @@ public class KFSubmissionsRequester {
                 sub.id = cur.optString("id");
                 sub.thumb_url = cur.optString("thumbnail");
 
+                boolean over_18 = cur.getBoolean("over_18");
+
+                if(over_18 || sub.thumb_url.equals("nsfw")) {
+                    sub.isNSFW = true;
+                    Log.d(TAG, "got NSFW post: " + sub.title);
+                }
+
                 if(sub.title != null)
                     result.add(sub);
             }

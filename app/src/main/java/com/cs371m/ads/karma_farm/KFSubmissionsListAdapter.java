@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -38,7 +39,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
+        Log.d(TAG, "getting views");
         View row = convertView;
 
         final SubmissionHolder holder;
@@ -57,10 +58,11 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
             holder.thumb = (ImageView)row.findViewById(R.id.thumb);
             holder.comment_button = (ImageButton)row.findViewById(R.id.comment_icon);
             holder.nsfw = (TextView)row.findViewById(R.id.nsfw);
-
-            int nsfwVisibility = (submission.isNSFW) ? View.VISIBLE : View.GONE;
-
-            holder.nsfw.setVisibility(nsfwVisibility);
+            // set NSFW tag
+            if(submission.isNSFW) {
+                Log.d(TAG, "got NSFW post: " + submission.title);
+                Log.d(TAG, "visibilty of NSFW is: " + holder.nsfw.getVisibility());
+            }
 
             holder.num_comments = (TextView)row
                     .findViewById(R.id.score_board)
@@ -71,38 +73,39 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
         } else {
             holder = (SubmissionHolder)row.getTag();
-            if (submission.isDownVoted) {
-                holder.score.setText(Integer.toString(submission.score - 1));
-                holder.score.setTextColor(getContext().getResources().getColor(R.color.downvote));
-                holder.score.setTextAppearance(getContext(),
-                        R.style.boldText);
-            }
-            else if (submission.isUpVoted) {
-                holder.score.setText(Integer.toString(submission.score + 1));
-                holder.score.setTextColor(getContext().getResources().getColor(R.color.upvote));
-                holder.score.setTextAppearance(getContext(),
-                        R.style.boldText);
-            }
-            else {
-                holder.score.setText(Integer.toString(submission.score));
-                holder.score.setTextColor(Color.parseColor("#000000"));
-                holder.score.setTextAppearance(getContext(),
-                        R.style.normalText);
-            }
         }
 
         // set textviews
+        int nsfwVisibility = (submission.isNSFW) ? View.VISIBLE : View.GONE;
+        holder.nsfw.setVisibility(nsfwVisibility);
 
-        if (!submission.isUpVoted && !submission.isDownVoted)
+        // set karma score
+        if (submission.isDownVoted) {
+            holder.score.setText(Integer.toString(submission.score - 1));
+            holder.score.setTextColor(getContext().getResources().getColor(R.color.downvote));
+            holder.score.setTextAppearance(getContext(),
+                    R.style.boldText);
+        }
+        else if (submission.isUpVoted) {
+            holder.score.setText(Integer.toString(submission.score + 1));
+            holder.score.setTextColor(getContext().getResources().getColor(R.color.upvote));
+            holder.score.setTextAppearance(getContext(),
+                    R.style.boldText);
+        }
+        else {
             holder.score.setText(Integer.toString(submission.score));
-
-        holder.details.setText(submission.getDetails());
+            holder.score.setTextColor(Color.parseColor("#000000"));
+            holder.score.setTextAppearance(getContext(),
+                    R.style.normalText);
+        }
         Bundle bundle = new Bundle();
         bundle.putInt("originalValue", submission.score);
         holder.score.setTag(bundle);
 
+        holder.details.setText(submission.getDetails());
         holder.title.setText(submission.title);
         holder.num_comments.setText(submission.getNumComments());
+        holder.nsfw.setText(R.string.nsfw);
 
 
         // configure clickable areas
@@ -110,13 +113,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
         bundle.putString("url", submission.url);
         holder.title.setTag(bundle);
-
-        holder.title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCallingFragment.onSubmissionClick(view);
-            }
-        });
 
         bundle.putString("id", submission.id);
         holder.comment_button.setTag(bundle);

@@ -38,16 +38,14 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
     private List<KFComment> mComments;
     private KFCommentsRequester mCommentsRequester;
     private ProgressBar spinner;
-    private HorizontalSwipeDetector swipeDetector;
 
     private static final String ARG_SUBREDDIT = "subreddit";
 
     private static final String TAG = "KFCommentsListFragment";
-
+    private static final HorizontalSwipeDetector swipeDetector = new HorizontalSwipeDetector();
 
     public KFCommentsListFragment() {
         mHandler = new Handler();
-        swipeDetector = new HorizontalSwipeDetector();
     }
 
     public static Fragment newInstance(String id){
