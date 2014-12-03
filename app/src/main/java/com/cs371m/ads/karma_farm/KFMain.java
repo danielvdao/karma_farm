@@ -301,7 +301,7 @@ public class KFMain extends Activity
                             // get login info to pass to login task
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(getApplicationContext(), KFCommentTask.class);
+//                                Intent intent = new Intent(getApplicationContext(), KFCommentTask.class);
                                 EditText comment = (EditText) commentView.findViewById(R.id.comment_text);
                                 if (mSharedPreferences.getInt("logged_in", 0) == 1){
                                     String username = mSharedPreferences.getString("username", null);
@@ -386,9 +386,10 @@ public class KFMain extends Activity
 
     private class LoginTask extends AsyncTask<String, String, Double>{
         private JSONObject result;
-
+        private String username;
         @Override
         protected Double doInBackground(String... params){
+            username = params[0].toString();
             postData(params[0], params[1]);
             return null;
         }
@@ -399,16 +400,16 @@ public class KFMain extends Activity
 
             try {
                 if (this.result.getString("success").equals("True")) {
-                    Toast.makeText(getApplicationContext(), "Login succeeded", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "You have logged in as " + username + ".", Toast.LENGTH_LONG).show();
                 }
 
                 else{
-                    Toast.makeText(getApplicationContext(), "Login failed, please try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Login failed, please try again " + username + ".", Toast.LENGTH_LONG).show();
                 }
             }
 
             catch (Exception ex){
-                Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Sorry " + username + " an error on our end has happened.", Toast.LENGTH_LONG).show();
             }
 
             invalidateOptionsMenu();
