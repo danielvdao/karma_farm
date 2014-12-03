@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
@@ -288,6 +289,8 @@ public class KFMain extends Activity
     }
 
     private class LoginTask extends AsyncTask<String, String, Double>{
+        private JSONObject result;
+
         @Override
         protected Double doInBackground(String... params){
             postData(params[0], params[1]);
@@ -297,6 +300,21 @@ public class KFMain extends Activity
 
         protected void onPostExecute(Double result){
             Log.d(TAG, "finished POST request");
+
+            try {
+                if (this.result.getString("success").equals("True")) {
+                    Toast.makeText(getApplicationContext(), "Login succeeded", Toast.LENGTH_LONG).show();
+                }
+
+                else{
+                    Toast.makeText(getApplicationContext(), "Login failed, please try again", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            catch (Exception ex){
+                Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened!", Toast.LENGTH_LONG).show();
+            }
+
 
         }
 
@@ -316,12 +334,19 @@ public class KFMain extends Activity
                 HttpEntity entity = response.getEntity();
                 String entity_string = EntityUtils.toString(entity);
 
-                JSONObject result = new JSONObject(entity_string);
+                result = new JSONObject(entity_string);
 
                 if (result.getString("success").equals("True")){
                     mEditor.putString("username", username);
                     mEditor.putString("password", password);
                     mEditor.putInt("logged_in", 1);
+                    mEditor.commit();
+                }
+
+                else{
+                    mEditor.putString("username", null);
+                    mEditor.putString("password", null);
+                    mEditor.putInt("logged_in", 0);
                     mEditor.commit();
                 }
 
