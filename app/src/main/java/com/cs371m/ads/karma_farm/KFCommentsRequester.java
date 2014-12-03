@@ -57,20 +57,23 @@ public class KFCommentsRequester {
             for(int i = 0; i < comments.length(); i++ ) {
 
                 try {
+
                     JSONObject cur = comments.getJSONObject(i);
 
-                    KFComment comment = new KFComment();
+                    if(!cur.has("body")) {
+                        KFComment comment = new KFComment();
 
-                    comment.author = cur.getString("author");
-                    comment.text = cur.getString("text");
-                    comment.KFscore = cur.getInt("rank");
-                    comment.score = cur.getInt("score");
-                    comment.depth = depth[0];
-                    comment.id = cur.getString("_id");
-                    result.add(comment);
+                        comment.author = cur.getString("author");
+                        comment.text = cur.getString("text");
+                        comment.KFscore = cur.getInt("rank");
+                        comment.score = cur.getInt("score");
+                        comment.depth = depth[0];
+                        comment.id = cur.getString("_id");
+                        result.add(comment);
 
-                    if ( cur.has("replies")) {
-                        requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), result, depth);
+                        if (cur.has("replies")) {
+                            requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), result, depth);
+                        }
                     }
 
                 }catch(JSONException je){

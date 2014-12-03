@@ -19,8 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -53,11 +53,13 @@ public class KFNavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
+    private EditText mNavBarEditText;
 
     private int mCurrentSelectedPosition = 0;
 
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+
 
     public KFNavigationDrawerFragment() {
     }
@@ -92,16 +94,19 @@ public class KFNavigationDrawerFragment extends Fragment {
             Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
+
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectItem(position);
             }
         });
+
         mDrawerListView.setAdapter(
                 new ArrayAdapter<String>(
                 getActionBar().getThemedContext(), android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1, KFMain.default_subs));
+                android.R.id.text1, KFMain.DEFAULT_SUBS));
+
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }

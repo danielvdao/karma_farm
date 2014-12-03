@@ -7,3 +7,4 @@
     android:dividerHeight="0dp"
     android:background="#cccc"
     tools:context="com.cs371m.ads.karma_farm.KFNavigationDrawerFragment" />
+
