@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -22,8 +23,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 /**
@@ -211,8 +212,6 @@ public class KFMain extends Activity
 
         if (id == R.id.action_login) {
             showDialog(LOGIN_DIALOG);
-//            Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
-//            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -248,7 +247,6 @@ public class KFMain extends Activity
                             // get login info to pass to login task
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-//                              Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
                                 EditText username = (EditText) loginView.findViewById(R.id.username);
                                 EditText password = (EditText) loginView.findViewById(R.id.password);
 
@@ -257,34 +255,10 @@ public class KFMain extends Activity
                                     Log.d(TAG, "User hasn't entered anything");
                                     Toast.makeText(getApplicationContext(), "Please enter valid credentials.", Toast.LENGTH_LONG).show();
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "Validating credentials", Toast.LENGTH_LONG).show();
-                                    DefaultHttpClient login_client = new DefaultHttpClient();
-                                    JSONObject login_json = new JSONObject();
+                //                    Toast.makeText(getApplicationContext(), "Validating credentials", Toast.LENGTH_LONG).show();
+                                    Log.d(TAG, "in the login and hopefully im seeing this");
+                                    new LoginTask().execute(username.getText().toString(), password.getText().toString());
 
-                                    try {
-                                        login_json.put("username", username.getText().toString());
-                                        login_json.put("password", password.getText().toString());
-                                        HttpPost post_request = new HttpPost("http://104.131.71.174/api/v0/login");
-                                        StringEntity params = new StringEntity(login_json.toString());
-                                        post_request.addHeader("content-type", "application/json");
-                                        post_request.setEntity(params);
-
-                                        HttpResponse response = login_client.execute(post_request);
-                                        HttpEntity entity = response.getEntity();
-                                        String entity_string = entity.toString();
-
-                                        JSONObject result = new JSONObject(entity_string);
-
-
-                                        Log.d(TAG, result.getString("success"));
-
-
-                                    } catch (Exception ex) {
-                                        Log.d(TAG, "Exception: " + ex.toString());
-                                    } finally {
-                                        login_client.getConnectionManager().shutdown();
-                                        Log.d(TAG, "Finished");
-                                    }
 
                                 }
                             }
@@ -316,4 +290,46 @@ public class KFMain extends Activity
         return builder.create();
     }
 
+    private class LoginTask extends AsyncTask<String, String, Double>{
+        @Override
+        protected Double doInBackground(String... params){
+            postData(params[0], params[1]);
+            return null;
+        }
+
+
+        protected void onPostExecute(Double result){
+            Log.d(TAG, "finished POST request");
+
+        }
+
+        public void postData(String username, String password){
+            DefaultHttpClient login_client = new DefaultHttpClient();
+            JSONObject login_json = new JSONObject();
+            Log.d(TAG, "in postData username - " + username + " password - " + password);
+            try {
+                login_json.put("username", username);
+                login_json.put("password", password);
+                HttpPost post_request = new HttpPost("http://104.131.71.174/api/v0/login");
+                StringEntity params = new StringEntity(login_json.toString());
+                post_request.addHeader("content-type", "application/json");
+                post_request.setEntity(params);
+
+                HttpResponse response = login_client.execute(post_request);
+                HttpEntity entity = response.getEntity();
+                String entity_string = EntityUtils.toString(entity);
+
+                JSONObject result = new JSONObject(entity_string);
+
+
+                Log.d(TAG, "success: " + result.getString("success"));
+
+            } catch (Exception ex) {
+                Log.d(TAG, "Exception: " + ex.toString());
+            } finally {
+                login_client.getConnectionManager().shutdown();
+                Log.d(TAG, "Finished");
+            }
+        }
+    }
 }
