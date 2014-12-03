@@ -255,11 +255,8 @@ public class KFMain extends Activity
                                     Log.d(TAG, "User hasn't entered anything");
                                     Toast.makeText(getApplicationContext(), "Please enter valid credentials.", Toast.LENGTH_LONG).show();
                                 } else {
-                //                    Toast.makeText(getApplicationContext(), "Validating credentials", Toast.LENGTH_LONG).show();
                                     Log.d(TAG, "in the login and hopefully im seeing this");
                                     new LoginTask().execute(username.getText().toString(), password.getText().toString());
-
-
                                 }
                             }
                         })
@@ -321,6 +318,12 @@ public class KFMain extends Activity
 
                 JSONObject result = new JSONObject(entity_string);
 
+                if (result.getString("success").equals("True")){
+                    mEditor.putString("username", username);
+                    mEditor.putString("password", password);
+                    mEditor.putInt("logged_in", 1);
+                    mEditor.commit();
+                }
 
                 Log.d(TAG, "success: " + result.getString("success"));
 
