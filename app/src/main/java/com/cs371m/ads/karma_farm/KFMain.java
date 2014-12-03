@@ -375,7 +375,7 @@ public class KFMain extends Activity
                 comment_json.put("password", password);
                 comment_json.put("text", comment);
                 comment_json.put("comment_id", comment_id);
-                HttpPost post_request = new HttpPost("http://104.131.71.174:5000/api/v0/comment");
+                HttpPost post_request = new HttpPost("http://104.131.71.174/api/v0/comment");
                 StringEntity params = new StringEntity(comment_json.toString());
                 post_request.addHeader("content-type", "application/json");
                 post_request.setEntity(params);
