@@ -459,4 +459,93 @@ public class KFMain extends Activity
             }
         }
     }
+
+    protected class VotingTask extends AsyncTask<String, String, Double>{
+        private JSONObject result;
+        private String vote_type;
+
+        public VotingTask(String vote_type){
+            vote_type = vote_type;
+        }
+
+        @Override
+        protected Double doInBackground(String... params){
+            postData(params[0], params[1], params[2], params[3]);
+            return null;
+        }
+
+
+        protected void onPostExecute(Double result){
+            Log.d(TAG, "finished POST request");
+
+            try {
+                if (this.result.getString("success").equals("True")) {
+                    Toast.makeText(getApplicationContext(), "Vote succeeded.", Toast.LENGTH_LONG).show();
+                }
+
+                else{
+                    Toast.makeText(getApplicationContext(), "Vote failed, please try again", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            catch (Exception ex){
+                Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened!", Toast.LENGTH_LONG).show();
+            }
+
+
+        }
+
+        public void postData(String username, String password, String id, String submission){
+            DefaultHttpClient login_client = new DefaultHttpClient();
+            JSONObject vote_json = new JSONObject();
+            Log.d(TAG, "in VotingTask username - " + username + " password - " + password);
+            try {
+                vote_json.put("username", username);
+                vote_json.put("password", password);
+                vote_json.put("submission", submission);
+                vote_json.put("id", id);
+                String request = "http://104.131.71.174/api/v0/:5000";
+                if (vote_type.equals("UP"))
+                    request += "upvote";
+                else if (vote_type.equals("DOWN"))
+                    request += "downvote";
+                else
+                    request += "clear_vote";
+
+                HttpPost post_request = new HttpPost(request);
+                StringEntity params = new StringEntity(vote_json.toString());
+                post_request.addHeader("content-type", "application/json");
+                post_request.setEntity(params);
+
+                HttpResponse response = login_client.execute(post_request);
+                HttpEntity entity = response.getEntity();
+                String entity_string = EntityUtils.toString(entity);
+
+                result = new JSONObject(entity_string);
+
+                if (result.getString("success").equals("True")){
+                    mEditor.putString("username", username);
+                    mEditor.putString("password", password);
+                    mEditor.putInt("logged_in", 1);
+                    mEditor.commit();
+                }
+
+                else{
+                    mEditor.putString("username", null);
+                    mEditor.putString("password", null);
+                    mEditor.putInt("logged_in", 0);
+                    mEditor.commit();
+                }
+
+                Log.d(TAG, "success: " + result.getString("success"));
+
+            } catch (Exception ex) {
+                Log.d(TAG, "Exception: " + ex.toString());
+            } finally {
+                login_client.getConnectionManager().shutdown();
+                Log.d(TAG, "Finished");
+            }
+        }
+    }
+
 }
