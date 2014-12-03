@@ -114,13 +114,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         bundle.putString("url", submission.url);
         holder.title.setTag(bundle);
 
-        holder.title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCallingFragment.onSubmissionClick(view);
-            }
-        });
-
         bundle.putString("id", submission.id);
         holder.comment_button.setTag(bundle);
         holder.comment_button.setFocusable(false) ;
