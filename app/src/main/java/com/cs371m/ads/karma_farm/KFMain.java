@@ -292,8 +292,9 @@ public class KFMain extends Activity
     private Dialog commentDialog(AlertDialog.Builder builder, String id) {
 
         LayoutInflater inflater = LayoutInflater.from(this);
-
+        final String comment_id = id;
         final View commentView = inflater.inflate(R.layout.comment_dialog, null);
+
         builder.setMessage(R.string.comment_message)
                 .setView(commentView)
                 .setCancelable(false)
@@ -302,19 +303,18 @@ public class KFMain extends Activity
                             // get login info to pass to login task
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(getApplicationContext(), KFCommentTask.class);
+//                                Intent intent = new Intent(getApplicationContext(), KFCommentTask.class);
                                 EditText comment = (EditText) commentView.findViewById(R.id.comment_text);
                                 if (mSharedPreferences.getInt("logged_in", 0) == 1){
                                     String username = mSharedPreferences.getString("username", null);
                                     String password = mSharedPreferences.getString("password", null);
-                                    String text = comment.toString();
-                                    //need comment id
-                                    //String comment_id = comment id;
-                                    //new CommentTask().execute(username, password, text, comment_id);
+                                    String text = comment.getText().toString();
+//                                    need comment id
+                                    new CommentTask().execute(username, password, text, comment_id);
                                 }
 
                                 else {
-                                    Toast.makeText(getApplicationContext(), "Please login!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "Please login to post.", Toast.LENGTH_LONG).show();
                                 }
                             }
                         })
@@ -332,22 +332,21 @@ public class KFMain extends Activity
             return null;
         }
 
-
         protected void onPostExecute(Double result){
             Log.d(TAG, "finished POST request");
 
             try {
                 if (this.result.getString("success").equals("True")) {
-                    Toast.makeText(getApplicationContext(), "Comment succeeded", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Comment succeeded.", Toast.LENGTH_LONG).show();
                 }
 
                 else{
-                    Toast.makeText(getApplicationContext(), "Comment failed, please try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Comment failed, please try again.", Toast.LENGTH_LONG).show();
                 }
             }
 
             catch (Exception ex){
-                Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened.", Toast.LENGTH_LONG).show();
             }
 
 
@@ -362,7 +361,7 @@ public class KFMain extends Activity
                 comment_json.put("password", password);
                 comment_json.put("text", comment);
                 comment_json.put("comment_id", comment_id);
-                HttpPost post_request = new HttpPost("http://104.131.71.174/api/v0/comment");
+                HttpPost post_request = new HttpPost("http://104.131.71.174:5000/api/v0/comment");
                 StringEntity params = new StringEntity(comment_json.toString());
                 post_request.addHeader("content-type", "application/json");
                 post_request.setEntity(params);
@@ -387,9 +386,10 @@ public class KFMain extends Activity
 
     private class LoginTask extends AsyncTask<String, String, Double>{
         private JSONObject result;
-
+        private String username;
         @Override
         protected Double doInBackground(String... params){
+            username = params[0].toString();
             postData(params[0], params[1]);
             return null;
         }
@@ -400,16 +400,16 @@ public class KFMain extends Activity
 
             try {
                 if (this.result.getString("success").equals("True")) {
-                    Toast.makeText(getApplicationContext(), "Login succeeded", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "You have logged in as " + username + ".", Toast.LENGTH_LONG).show();
                 }
 
                 else{
-                    Toast.makeText(getApplicationContext(), "Login failed, please try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Login failed, please try again " + username + ".", Toast.LENGTH_LONG).show();
                 }
             }
 
             catch (Exception ex){
-                Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Sorry " + username + " an error on our end has happened.", Toast.LENGTH_LONG).show();
             }
 
             invalidateOptionsMenu();

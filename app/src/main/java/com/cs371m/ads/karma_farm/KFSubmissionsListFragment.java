@@ -24,7 +24,7 @@ import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class KFSubmissionsListFragment extends ListFragment implements SwipeVoteable {
+public class KFSubmissionsListFragment extends ListFragment {
 
     KFSubmissionsListAdapter mAdapter;
     Handler mHandler;
@@ -191,9 +191,8 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
                     if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
                         if(score <= originalValue) {
                             Log.d(TAG, "upvote swipe on" + position);
-                            submission.isUpVoted = true;
-                            submission.isDownVoted = false;
 
+                            upVote(submission);
                             int newScore = (score == originalValue) ? score + 1 : score + 2;
 
                             scoreTextView.setText(Integer.toString(newScore));
@@ -201,14 +200,14 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
                             scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
                                     R.style.boldText);
                             flashOrange(view);
+
                         }
 
                     } else {
                         if(score >= originalValue) {
                             Log.d(TAG, "downvote swipe on " + position);
-                            submission.isUpVoted = false;
-                            submission.isDownVoted = true;
 
+                            downVote(submission);
                             int newScore = (score == originalValue) ? score - 1 : score - 2;
 
                             scoreTextView.setText(Integer.toString(newScore));
@@ -234,9 +233,13 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
                                            long id) {
 
+                KFSubmission submission = mKFSubmissions.get(position);
+                clearVote(submission);
+
                 TextView scoreTextView = (TextView)view.findViewById(R.id.score_board)
                         .findViewById(R.id.post_score);
                 Bundle bundle = (Bundle) scoreTextView.getTag();
+
                 int originalValue = bundle.getInt("originalValue");
                 int score = Integer.parseInt(scoreTextView.getText().toString());
                 if (score != originalValue){
@@ -250,6 +253,26 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
             }
         };
         getListView().setOnItemLongClickListener(longListener);
+    }
+
+    public void upVote(KFSubmission submission) {
+        submission.isUpVoted = true;
+        submission.isDownVoted = false;
+
+        (KFMain)getActivity().VoteTask(submission.id, "True", "UP");
+
+    }
+
+    public void downVote(KFSubmission submission) {
+        submission.isUpVoted = false;
+        submission.isDownVoted = true;
+        (KFMain)getActivity().VoteTask(submission.id, "True", "DOWN");
+    }
+
+    public void clearVote(KFSubmission submission) {
+        submission.isUpVoted = false;
+        submission.isDownVoted = false;
+        (KFMain)getActivity().VoteTask(submission.id, "True", "CLEAR");
     }
 
     public void flashOrange(View view) {
