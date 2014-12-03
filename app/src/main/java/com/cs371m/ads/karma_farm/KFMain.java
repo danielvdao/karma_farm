@@ -281,6 +281,8 @@ public class KFMain extends Activity
                                 } else {
                                     Log.d(TAG, "in the login and hopefully im seeing this");
                                     new LoginTask().execute(username.getText().toString(), password.getText().toString());
+                                    Log.d(TAG, "logged_in in dialog: " + mSharedPreferences.getInt("logged_in", 0));
+
                                 }
                             }
                         })
