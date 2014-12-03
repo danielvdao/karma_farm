@@ -62,22 +62,6 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
             Bundle bundle = new Bundle();
             bundle.putString("id", comment.id);
             commentHolder.commentButton.setTag(bundle);
-
-            commentHolder.commentButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // create post dialog
-                    // make post to backend with username and password
-                    Bundle bundle = (Bundle) view.getTag();
-                    String id = bundle.getString("id");
-
-                    if (id != null) {
-                        mListFragment.postCommentDialog(bundle);
-                    }
-                }
-            });
-
-
             row.setTag(commentHolder);
         } else {
             commentHolder = (CommentHolder) row.getTag();
@@ -100,6 +84,20 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
                         R.style.normalText);
             }
         }
+
+        commentHolder.commentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // create post dialog
+                // make post to backend with username and password
+                Bundle bundle = (Bundle) view.getTag();
+                String id = bundle.getString("id");
+
+                if (id != null) {
+                    mListFragment.postCommentDialog(bundle);
+                }
+            }
+        });
 
         commentHolder.author.setText(comment.author);
         commentHolder.text.setText(comment.text);
