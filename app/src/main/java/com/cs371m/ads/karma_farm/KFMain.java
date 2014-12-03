@@ -18,6 +18,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.app.AlertDialog;
 import android.content.Intent;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
 
 /**
  * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -241,7 +248,7 @@ public class KFMain extends Activity
                             // get login info to pass to login task
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
+//                              Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
                                 EditText username = (EditText) loginView.findViewById(R.id.username);
                                 EditText password = (EditText) loginView.findViewById(R.id.password);
 
@@ -249,14 +256,36 @@ public class KFMain extends Activity
                                 if (username.getText() == null || password.getText() == null) {
                                     Log.d(TAG, "User hasn't entered anything");
                                     Toast.makeText(getApplicationContext(), "Please enter valid credentials.", Toast.LENGTH_LONG).show();
-                                }
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Validating credentials", Toast.LENGTH_LONG).show();
+                                    DefaultHttpClient login_client = new DefaultHttpClient();
+                                    JSONObject login_json = new JSONObject();
 
-                                else {
-                                      Toast.makeText(getApplicationContext(), "Validating credentials", Toast.LENGTH_LONG).show();
-//                                    tryLogin(username.getText().toString(), password.getText().toString());
-//                                    intent.putExtra("username", username.getText().toString());
-//                                    intent.putExtra("password", password.getText().toString());
-//                                    startActivity(intent);
+                                    try {
+                                        login_json.put("username", username.getText().toString());
+                                        login_json.put("password", password.getText().toString());
+                                        HttpPost post_request = new HttpPost("http://104.131.71.174/api/v0/login");
+                                        StringEntity params = new StringEntity(login_json.toString());
+                                        post_request.addHeader("content-type", "application/json");
+                                        post_request.setEntity(params);
+
+                                        HttpResponse response = login_client.execute(post_request);
+                                        HttpEntity entity = response.getEntity();
+                                        String entity_string = entity.toString();
+
+                                        JSONObject result = new JSONObject(entity_string);
+
+
+                                        Log.d(TAG, result.getString("success"));
+
+
+                                    } catch (Exception ex) {
+                                        Log.d(TAG, "Exception: " + ex.toString());
+                                    } finally {
+                                        login_client.getConnectionManager().shutdown();
+                                        Log.d(TAG, "Finished");
+                                    }
+
                                 }
                             }
                         })

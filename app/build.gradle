@@ -26,4 +26,5 @@ dependencies {
     compile files('libs/androauth.jar')
     compile files('libs/hoot.jar')
     compile files('libs/commons-io-2.4.jar')
+    compile files('libs/httpcore-4.3.3.jar')
 }
