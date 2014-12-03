@@ -103,7 +103,6 @@
         android:layout_below="@id/post_text"
         android:layout_alignLeft="@id/post_text"
         android:textColor="@color/red"
-        android:text="@string/nsfw"
-        android:visibility="gone" />
+        android:text="@string/nsfw" />
 
 </RelativeLayout>

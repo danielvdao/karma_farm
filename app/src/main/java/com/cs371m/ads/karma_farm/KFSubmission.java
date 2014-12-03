@@ -19,7 +19,6 @@ public class KFSubmission {
     boolean isDownVoted;
     boolean isNSFW;
 
-
     String getDetails() {
         String details = "authored by /u/" + author;
         return details;

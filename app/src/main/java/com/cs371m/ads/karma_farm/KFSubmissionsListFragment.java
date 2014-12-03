@@ -71,8 +71,6 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
         args.putString(ARG_SUBREDDIT, subreddit);
         listFragment.setArguments(args);
         listFragment.mSubreddit = subreddit;
-        listFragment.mKFSubmissionsRequester = new KFSubmissionsRequester(listFragment.mSubreddit);
-
         return listFragment;
     }
 
@@ -379,6 +377,7 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
         // setRetainInstance(true) method has been called on
         // this fragment
         Log.d(TAG, "requesting submissions list");
+        mKFSubmissionsRequester = new KFSubmissionsRequester(mSubreddit);
         spinner = (ProgressBar) getView().findViewById(R.id.submissions_progress_bar);
         spinner.setVisibility(View.VISIBLE);
 
@@ -409,7 +408,6 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
                             try {
                                 mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions, fragment);
                                 setListAdapter(mAdapter);
-
                                 spinner.setVisibility(View.GONE);
                             } catch (NullPointerException e) {
                                 // this happens when activity is destroyed during load
