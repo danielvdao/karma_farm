@@ -38,6 +38,7 @@ public class KFCommentsListFragment extends ListFragment {
     private List<KFComment> mComments;
     private KFCommentsRequester mCommentsRequester;
     private ProgressBar spinner;
+    private CommentListListener mListener;
 
     private static final String ARG_SUBREDDIT = "subreddit";
 
@@ -79,6 +80,16 @@ public class KFCommentsListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         initialize();
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (CommentListListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnArticleSelectedListener");
+        }
     }
 
     @Override
@@ -138,7 +149,7 @@ public class KFCommentsListFragment extends ListFragment {
                 Log.d(TAG, "long press");
                 KFComment comment = mComments.get(position);
                 clearVote(comment);
-                
+
                 TextView scoreTextView = (TextView)view.findViewById(R.id.score);
                 Bundle bundle = (Bundle) scoreTextView.getTag();
                 int originalValue = bundle.getInt("originalValue");
@@ -158,24 +169,28 @@ public class KFCommentsListFragment extends ListFragment {
 
     public void postCommentDialog(Bundle args) {
         getActivity().showDialog(KFMain.COMMENT_DIALOG, args);
+
+    }
+    public interface CommentListListener {
+        public void vote(String id, String isSubmission, String action);
     }
 
     public void upVote(KFComment comment) {
         comment.upVoted = true;
         comment.downVoted = false;
-        (KFMain)getActivity().VoteTask(comment.id, "False", "UP");
+        mListener.vote(comment.id, "False", "UP");
     }
 
     public void downVote(KFComment comment) {
         comment.upVoted = false;
         comment.downVoted = true;
-        (KFMain)getActivity().VoteTask(comment.id, "False", "DOWN");
+        mListener.vote(comment.id, "False", "DOWN");
     }
 
     public void clearVote(KFComment comment) {
         comment.upVoted = false;
         comment.downVoted = false;
-        (KFMain)getActivity().VoteTask(comment.id, "False", "CLEAR");
+        mListener.vote(comment.id, "False", "CLEAR");
     }
 
     public void flashOrange(View view) {

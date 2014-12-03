@@ -238,6 +238,13 @@ public class KFMain extends Activity
         return super.onOptionsItemSelected(item);
     }
 
+    public void vote(String id, String isSubmission, String action) {
+        Log.d(TAG, "action : " + action);
+
+        new VotingTask().execute(mSharedPreferences.getString("username", null),
+                mSharedPreferences.getString("password", null), id, isSubmission, action);
+    }
+
     @Override
     protected Dialog onCreateDialog(int id, Bundle args) {
         Dialog dialog = null;
@@ -462,15 +469,10 @@ public class KFMain extends Activity
 
     protected class VotingTask extends AsyncTask<String, String, Double>{
         private JSONObject result;
-        private String vote_type;
-
-        public VotingTask(String vote_type){
-            vote_type = vote_type;
-        }
 
         @Override
         protected Double doInBackground(String... params){
-            postData(params[0], params[1], params[2], params[3]);
+            postData(params[0], params[1], params[2], params[3], params[4]);
             return null;
         }
 
@@ -495,19 +497,35 @@ public class KFMain extends Activity
 
         }
 
-        public void postData(String username, String password, String id, String submission){
-            DefaultHttpClient login_client = new DefaultHttpClient();
+        public void postData(String username, String password, String id, String submission, String type){
+            DefaultHttpClient vote_client = new DefaultHttpClient();
             JSONObject vote_json = new JSONObject();
+
+            Log.d(TAG, "vote type: " + type);
+
+            if(username == null)
+                Log.d(TAG, "username null");
+
+            if(password == null)
+                Log.d(TAG, "password null");
+
+            if(id == null)
+                Log.d(TAG, "id null");
+
+            if(submission == null)
+                Log.d(TAG, "submission null");
+
+
             Log.d(TAG, "in VotingTask username - " + username + " password - " + password);
             try {
                 vote_json.put("username", username);
                 vote_json.put("password", password);
                 vote_json.put("submission", submission);
                 vote_json.put("id", id);
-                String request = "http://104.131.71.174/api/v0/:5000";
-                if (vote_type.equals("UP"))
+                String request = "http://104.131.71.174/api/v0/";
+                if (type.equals("UP"))
                     request += "upvote";
-                else if (vote_type.equals("DOWN"))
+                else if (type.equals("DOWN"))
                     request += "downvote";
                 else
                     request += "clear_vote";
@@ -517,32 +535,18 @@ public class KFMain extends Activity
                 post_request.addHeader("content-type", "application/json");
                 post_request.setEntity(params);
 
-                HttpResponse response = login_client.execute(post_request);
+                HttpResponse response = vote_client.execute(post_request);
                 HttpEntity entity = response.getEntity();
                 String entity_string = EntityUtils.toString(entity);
 
                 result = new JSONObject(entity_string);
-
-                if (result.getString("success").equals("True")){
-                    mEditor.putString("username", username);
-                    mEditor.putString("password", password);
-                    mEditor.putInt("logged_in", 1);
-                    mEditor.commit();
-                }
-
-                else{
-                    mEditor.putString("username", null);
-                    mEditor.putString("password", null);
-                    mEditor.putInt("logged_in", 0);
-                    mEditor.commit();
-                }
 
                 Log.d(TAG, "success: " + result.getString("success"));
 
             } catch (Exception ex) {
                 Log.d(TAG, "Exception: " + ex.toString());
             } finally {
-                login_client.getConnectionManager().shutdown();
+                vote_client.getConnectionManager().shutdown();
                 Log.d(TAG, "Finished");
             }
         }

@@ -259,20 +259,20 @@ public class KFSubmissionsListFragment extends ListFragment {
         submission.isUpVoted = true;
         submission.isDownVoted = false;
 
-        (KFMain)getActivity().VoteTask(submission.id, "True", "UP");
-
+        mListener.vote(submission.id, "True", "UP");
     }
 
     public void downVote(KFSubmission submission) {
         submission.isUpVoted = false;
         submission.isDownVoted = true;
-        (KFMain)getActivity().VoteTask(submission.id, "True", "DOWN");
+        mListener.vote(submission.id, "True", "DOWN");
     }
 
     public void clearVote(KFSubmission submission) {
         submission.isUpVoted = false;
         submission.isDownVoted = false;
-        (KFMain)getActivity().VoteTask(submission.id, "True", "CLEAR");
+
+        mListener.vote(submission.id, "True", "CLEAR");
     }
 
     public void flashOrange(View view) {
@@ -354,6 +354,7 @@ public class KFSubmissionsListFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "getActivity() = " + getActivity().toString());
         initialize();
     }
 
@@ -361,6 +362,7 @@ public class KFSubmissionsListFragment extends ListFragment {
 
         public void onSubmissionSelected(String url);
         public void onSubmissionCommentsSelected(String id);
+        public void vote(String id, String isSubmission, String action);
     }
 
 
