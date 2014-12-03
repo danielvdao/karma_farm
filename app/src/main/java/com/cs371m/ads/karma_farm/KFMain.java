@@ -4,7 +4,9 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -14,10 +16,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.app.AlertDialog;
 import android.content.Intent;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 /**
  * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -30,7 +40,6 @@ public class KFMain extends Activity
     public static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
     public static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
 
-    // TODO: move 
     public static final String[] DEFAULT_SUBS =
             {"announcement", "Art", "AskReddit", "askscience", "aww", "blog",
             "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
@@ -185,6 +194,20 @@ public class KFMain extends Activity
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.nav_bar, menu);
+
+            MenuItem loginItem = menu.findItem(R.id.action_login);
+            MenuItem logoutItem = menu.findItem(R.id.action_logout);
+            Log.d(TAG, "logged_in: " + mSharedPreferences.getInt("logged_in", 0));
+            if (mSharedPreferences.getInt("logged_in", 0) == 1){
+                loginItem.setVisible(false);
+                logoutItem.setVisible(true);
+            }
+
+            else{
+                loginItem.setVisible(true);
+                logoutItem.setVisible(false);
+            }
+
             restoreActionBar();
             return true;
         }
@@ -198,14 +221,18 @@ public class KFMain extends Activity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         if (id == R.id.action_login) {
             showDialog(LOGIN_DIALOG);
-//            Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
-//            startActivity(intent);
+        }
+
+        if (id == R.id.action_logout) {
+            mEditor.putString("username", null);
+            mEditor.putString("password", null);
+            mEditor.putInt("logged_in", 0);
+            mEditor.commit();
+            Toast.makeText(getApplicationContext(), "You have logged out.", Toast.LENGTH_LONG).show();
+            invalidateOptionsMenu();
         }
 
         return super.onOptionsItemSelected(item);
@@ -241,7 +268,6 @@ public class KFMain extends Activity
                             // get login info to pass to login task
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(getApplicationContext(), KFLoginTask.class);
                                 EditText username = (EditText) loginView.findViewById(R.id.username);
                                 EditText password = (EditText) loginView.findViewById(R.id.password);
 
@@ -249,14 +275,11 @@ public class KFMain extends Activity
                                 if (username.getText() == null || password.getText() == null) {
                                     Log.d(TAG, "User hasn't entered anything");
                                     Toast.makeText(getApplicationContext(), "Please enter valid credentials.", Toast.LENGTH_LONG).show();
-                                }
+                                } else {
+                                    Log.d(TAG, "in the login and hopefully im seeing this");
+                                    new LoginTask().execute(username.getText().toString(), password.getText().toString());
+                                    Log.d(TAG, "logged_in in dialog: " + mSharedPreferences.getInt("logged_in", 0));
 
-                                else {
-                                      Toast.makeText(getApplicationContext(), "Validating credentials", Toast.LENGTH_LONG).show();
-//                                    tryLogin(username.getText().toString(), password.getText().toString());
-//                                    intent.putExtra("username", username.getText().toString());
-//                                    intent.putExtra("password", password.getText().toString());
-//                                    startActivity(intent);
                                 }
                             }
                         })
@@ -280,6 +303,18 @@ public class KFMain extends Activity
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Intent intent = new Intent(getApplicationContext(), KFCommentTask.class);
                                 EditText comment = (EditText) commentView.findViewById(R.id.comment_text);
+                                if (mSharedPreferences.getInt("logged_in", 0) == 1){
+                                    String username = mSharedPreferences.getString("username", null);
+                                    String password = mSharedPreferences.getString("password", null);
+                                    String text = comment.toString();
+                                    //need comment id
+                                    //String comment_id = comment id;
+                                    //new CommentTask().execute(username, password, text, comment_id);
+                                }
+
+                                else {
+                                    Toast.makeText(getApplicationContext(), "Please login!", Toast.LENGTH_LONG).show();
+                                }
                             }
                         })
                 .setNegativeButton(R.string.cancel, null);
@@ -287,4 +322,140 @@ public class KFMain extends Activity
         return builder.create();
     }
 
+    private class CommentTask extends AsyncTask<String, String, Double>{
+        private JSONObject result;
+
+        @Override
+        protected Double doInBackground(String... params){
+            postData(params[0], params[1], params[2], params[3]);
+            return null;
+        }
+
+
+        protected void onPostExecute(Double result){
+            Log.d(TAG, "finished POST request");
+
+            try {
+                if (this.result.getString("success").equals("True")) {
+                    Toast.makeText(getApplicationContext(), "Comment succeeded", Toast.LENGTH_LONG).show();
+                }
+
+                else{
+                    Toast.makeText(getApplicationContext(), "Comment failed, please try again", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            catch (Exception ex){
+                Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened!", Toast.LENGTH_LONG).show();
+            }
+
+
+        }
+
+        public void postData(String username, String password, String comment, String comment_id){
+            DefaultHttpClient comment_client = new DefaultHttpClient();
+            JSONObject comment_json = new JSONObject();
+            Log.d(TAG, "in postData username - " + username + " password - " + password);
+            try {
+                comment_json.put("username", username);
+                comment_json.put("password", password);
+                comment_json.put("text", comment);
+                comment_json.put("comment_id", comment_id);
+                HttpPost post_request = new HttpPost("http://104.131.71.174/api/v0/comment");
+                StringEntity params = new StringEntity(comment_json.toString());
+                post_request.addHeader("content-type", "application/json");
+                post_request.setEntity(params);
+
+                HttpResponse response = comment_client.execute(post_request);
+                HttpEntity entity = response.getEntity();
+                String entity_string = EntityUtils.toString(entity);
+
+                result = new JSONObject(entity_string);
+
+                Log.d(TAG, "success: " + result.getString("success"));
+
+            } catch (Exception ex) {
+                Log.d(TAG, "Exception: " + ex.toString());
+            } finally {
+                comment_client.getConnectionManager().shutdown();
+                Log.d(TAG, "Finished");
+            }
+        }
+    }
+
+
+    private class LoginTask extends AsyncTask<String, String, Double>{
+        private JSONObject result;
+
+        @Override
+        protected Double doInBackground(String... params){
+            postData(params[0], params[1]);
+            return null;
+        }
+
+
+        protected void onPostExecute(Double result){
+            Log.d(TAG, "finished POST request");
+
+            try {
+                if (this.result.getString("success").equals("True")) {
+                    Toast.makeText(getApplicationContext(), "Login succeeded", Toast.LENGTH_LONG).show();
+                }
+
+                else{
+                    Toast.makeText(getApplicationContext(), "Login failed, please try again", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            catch (Exception ex){
+                Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened!", Toast.LENGTH_LONG).show();
+            }
+
+            invalidateOptionsMenu();
+
+
+        }
+
+        public void postData(String username, String password){
+            DefaultHttpClient login_client = new DefaultHttpClient();
+            JSONObject login_json = new JSONObject();
+            Log.d(TAG, "in postData username - " + username + " password - " + password);
+            try {
+                login_json.put("username", username);
+                login_json.put("password", password);
+                HttpPost post_request = new HttpPost("http://104.131.71.174/api/v0/login");
+                StringEntity params = new StringEntity(login_json.toString());
+                post_request.addHeader("content-type", "application/json");
+                post_request.setEntity(params);
+
+                HttpResponse response = login_client.execute(post_request);
+                HttpEntity entity = response.getEntity();
+                String entity_string = EntityUtils.toString(entity);
+
+                result = new JSONObject(entity_string);
+
+                if (result.getString("success").equals("True")){
+                    mEditor.putString("username", username);
+                    mEditor.putString("password", password);
+                    mEditor.putInt("logged_in", 1);
+                    mEditor.commit();
+                }
+
+                else{
+                    mEditor.putString("username", null);
+                    mEditor.putString("password", null);
+                    mEditor.putInt("logged_in", 0);
+                    mEditor.commit();
+                }
+
+                Log.d(TAG, "success: " + result.getString("success"));
+
+            } catch (Exception ex) {
+                Log.d(TAG, "Exception: " + ex.toString());
+            } finally {
+                login_client.getConnectionManager().shutdown();
+                Log.d(TAG, "Finished");
+            }
+        }
+    }
 }
