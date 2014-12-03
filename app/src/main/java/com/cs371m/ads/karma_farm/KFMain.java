@@ -221,9 +221,6 @@ public class KFMain extends Activity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         if (id == R.id.action_login) {
             showDialog(LOGIN_DIALOG);
