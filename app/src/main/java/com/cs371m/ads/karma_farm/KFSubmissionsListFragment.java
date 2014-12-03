@@ -174,7 +174,7 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
         });
 
 
-        // Vote by swipe setup
+        // Vote by swiping setup listeners
         getListView().setOnTouchListener(swipeDetector);
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
@@ -421,8 +421,6 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
             }.start();
         } else {
             Log.d(TAG, "using old list");
-
-
             mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions, this);
             setListAdapter(mAdapter);
             spinner.setVisibility(View.GONE);

@@ -71,30 +71,27 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
         } else {
             holder = (SubmissionHolder)row.getTag();
-            if (submission.isDownVoted) {
-                holder.score.setText(Integer.toString(submission.score - 1));
-                holder.score.setTextColor(getContext().getResources().getColor(R.color.downvote));
-                holder.score.setTextAppearance(getContext(),
-                        R.style.boldText);
-            }
-            else if (submission.isUpVoted) {
-                holder.score.setText(Integer.toString(submission.score + 1));
-                holder.score.setTextColor(getContext().getResources().getColor(R.color.upvote));
-                holder.score.setTextAppearance(getContext(),
-                        R.style.boldText);
-            }
-            else {
-                holder.score.setText(Integer.toString(submission.score));
-                holder.score.setTextColor(Color.parseColor("#000000"));
-                holder.score.setTextAppearance(getContext(),
-                        R.style.normalText);
-            }
         }
 
         // set textviews
-
-        if (!submission.isUpVoted && !submission.isDownVoted)
+        if (submission.isDownVoted) {
+            holder.score.setText(Integer.toString(submission.score - 1));
+            holder.score.setTextColor(getContext().getResources().getColor(R.color.downvote));
+            holder.score.setTextAppearance(getContext(),
+                    R.style.boldText);
+        }
+        else if (submission.isUpVoted) {
+            holder.score.setText(Integer.toString(submission.score + 1));
+            holder.score.setTextColor(getContext().getResources().getColor(R.color.upvote));
+            holder.score.setTextAppearance(getContext(),
+                    R.style.boldText);
+        }
+        else {
             holder.score.setText(Integer.toString(submission.score));
+            holder.score.setTextColor(Color.parseColor("#000000"));
+            holder.score.setTextAppearance(getContext(),
+                    R.style.normalText);
+        }
 
         holder.details.setText(submission.getDetails());
         Bundle bundle = new Bundle();
