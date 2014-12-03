@@ -332,7 +332,6 @@ public class KFMain extends Activity
             return null;
         }
 
-
         protected void onPostExecute(Double result){
             Log.d(TAG, "finished POST request");
 

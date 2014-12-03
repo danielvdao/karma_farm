@@ -31,7 +31,7 @@ import java.util.List;
 
 import static android.content.Intent.getIntent;
 
-public class KFCommentsListFragment extends ListFragment implements SwipeVoteable {
+public class KFCommentsListFragment extends ListFragment {
 
     private KFCommentsListAdapter mAdapter;
     private Handler mHandler;
@@ -101,8 +101,7 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
                     if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
                         if(score <= originalValue) {
                             Log.d(TAG, "upvote swipe on" + position);
-                            comment.upVoted = true;
-                            comment.downVoted = false;
+                            upVote(comment);
 
                             int newScore = (score == originalValue) ? score + 1 : score + 2;
 
@@ -115,9 +114,7 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
                     } else {
                         if(score >= originalValue) {
                             Log.d(TAG, "downvote swipe on " + position);
-                            comment.upVoted = false;
-                            comment.downVoted = true;
-
+                            downVote(comment);
                             int newScore = (score == originalValue) ? score - 1 : score - 2;
 
                             scoreTextView.setText(Integer.toString(newScore));
@@ -139,6 +136,9 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
                                            long id) {
                 Log.d(TAG, "long press");
+                KFComment comment = mComments.get(position);
+                clearVote(comment);
+                
                 TextView scoreTextView = (TextView)view.findViewById(R.id.score);
                 Bundle bundle = (Bundle) scoreTextView.getTag();
                 int originalValue = bundle.getInt("originalValue");
@@ -158,6 +158,24 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
 
     public void postCommentDialog(Bundle args) {
         getActivity().showDialog(KFMain.COMMENT_DIALOG, args);
+    }
+
+    public void upVote(KFComment comment) {
+        comment.upVoted = true;
+        comment.downVoted = false;
+        (KFMain)getActivity().VoteTask(comment.id, "False", "UP");
+    }
+
+    public void downVote(KFComment comment) {
+        comment.upVoted = false;
+        comment.downVoted = true;
+        (KFMain)getActivity().VoteTask(comment.id, "False", "DOWN");
+    }
+
+    public void clearVote(KFComment comment) {
+        comment.upVoted = false;
+        comment.downVoted = false;
+        (KFMain)getActivity().VoteTask(comment.id, "False", "CLEAR");
     }
 
     public void flashOrange(View view) {
