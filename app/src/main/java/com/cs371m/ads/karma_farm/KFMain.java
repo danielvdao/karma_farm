@@ -33,7 +33,8 @@ public class KFMain extends Activity
     public static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
     public static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
 
-    private static final int LOGIN_DIALOG = 0;
+    public static final int LOGIN_DIALOG = 0;
+    public static final int COMMENT_DIALOG = 1;
 
     public KFSubmissionsListFragment mKFSubmissionsListFragment;
     public KFCommentsListFragment mKFCommentsFragment;
@@ -232,6 +233,9 @@ public class KFMain extends Activity
             case LOGIN_DIALOG:
                 dialog = this.loginDialog(builder);
                 break;
+            case COMMENT_DIALOG:
+                dialog = this.commentDialog(builder);
+                break;
         }
 
         return dialog;
@@ -267,6 +271,28 @@ public class KFMain extends Activity
 //                                    intent.putExtra("password", password.getText().toString());
 //                                    startActivity(intent);
                                 }
+                            }
+                        })
+                .setNegativeButton(R.string.cancel, null);
+
+        return builder.create();
+    }
+
+    private Dialog commentDialog(AlertDialog.Builder builder) {
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+
+        final View commentView = inflater.inflate(R.layout.comment_dialog, null);
+        builder.setMessage(R.string.comment_message)
+                .setView(commentView)
+                .setCancelable(false)
+                .setPositiveButton(R.string.post,
+                        new DialogInterface.OnClickListener() {
+                            // get login info to pass to login task
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(getApplicationContext(), KFCommentTask.class);
+                                EditText comment = (EditText) commentView.findViewById(R.id.comment_text);
                             }
                         })
                 .setNegativeButton(R.string.cancel, null);

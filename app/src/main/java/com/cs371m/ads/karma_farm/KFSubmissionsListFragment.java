@@ -1,7 +1,6 @@
 package com.cs371m.ads.karma_farm;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import android.animation.Animator;
@@ -41,6 +40,7 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
 
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionsListFragment";
+    private HashSet<String> mOld_posts;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private boolean mLoading;
@@ -49,6 +49,7 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
 
         mHandler = new Handler();
         mKFSubmissions = new ArrayList<KFSubmission>();
+        mOld_posts = new HashSet<String>();
         mLoading = false;
     }
 
@@ -390,6 +391,11 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
                 public void run(){
                     try {
                         mKFSubmissions.addAll(mKFSubmissionsRequester.requestSubmissionList());
+
+                        for(KFSubmission sub : mKFSubmissions) {
+                            mOld_posts.add(sub.title);
+                        }
+
                         // UI elements should be accessed only in
                         // the primary thread, so we must use the
                         // handler here.
@@ -415,6 +421,8 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
             }.start();
         } else {
             Log.d(TAG, "using old list");
+
+
             mAdapter = new KFSubmissionsListAdapter(getActivity(), R.layout.post_item, mKFSubmissions, this);
             setListAdapter(mAdapter);
             spinner.setVisibility(View.GONE);
@@ -424,27 +432,28 @@ public class KFSubmissionsListFragment extends ListFragment implements SwipeVote
     }
 
     public void addMoreSubmissions(ArrayList<KFSubmission> more) {
-        mKFSubmissions.addAll(more);
+
+        for (KFSubmission sub : more) {
+            if (!mOld_posts.contains(sub.title)) {
+                mAdapter.add(sub);
+                mOld_posts.add(sub.title);
+            }
+        }
+
         mAdapter.notifyDataSetChanged();
         mLoading = false;
     }
 
     public void addMoreSubmissionsToFront(ArrayList<KFSubmission> more) {
 
-        HashSet<String> old_posts = new HashSet<String>();
-
-        for(KFSubmission sub : mKFSubmissions) {
-            old_posts.add(sub.title);
-        }
-
         int i = 0;
         for (KFSubmission sub : more) {
-            if (!old_posts.contains(sub.title)) {
+            if (!mOld_posts.contains(sub.title)) {
                 Log.d(TAG, "found new post " + sub.title);
                 mAdapter.insert(sub, i++);
+                mOld_posts.add(sub.title);
             }
         }
-        Log.d(TAG, "adding " + i + " posts to front");
         Log.d(TAG, "looking at " + mKFSubmissions.size() + " posts");
         mAdapter.notifyDataSetChanged();
         mLoading = false;

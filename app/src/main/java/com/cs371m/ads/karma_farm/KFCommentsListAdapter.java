@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,13 +23,16 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
     Context mContext;
     int mLayoutResourceId;
     List<KFComment> mData = null;
+    KFCommentsListFragment mListFragment;
 
-    public KFCommentsListAdapter(Context context, int layoutResourceId, List<KFComment> data) {
+    public KFCommentsListAdapter(Context context, int layoutResourceId, List<KFComment> data,
+                                 KFCommentsListFragment listFragment) {
         super(context, layoutResourceId, data);
 
         this.mContext = context;
         this.mLayoutResourceId = layoutResourceId;
         this.mData = data;
+        this.mListFragment = listFragment;
     }
 
     @Override
@@ -50,8 +56,27 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
             commentHolder.text = (TextView) row.findViewById(R.id.text);
             commentHolder.score = (TextView) row.findViewById(R.id.score);
             commentHolder.KFscore = (TextView) row.findViewById(R.id.KFscore);
+            commentHolder.commentButton = (ImageView) row.findViewById(R.id.comment);
 
             commentHolder.score.setText(Integer.toString(comment.score));
+            Bundle bundle = new Bundle();
+            bundle.putString("id", comment.id);
+            commentHolder.commentButton.setTag(bundle);
+
+            commentHolder.commentButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // create post dialog
+                    // make post to backend with username and password
+                    Bundle bundle = (Bundle) view.getTag();
+                    String id = bundle.getString("id");
+
+                    if (id != null) {
+                        mListFragment.postCommentDialog(id);
+                    }
+                }
+            });
+
 
             row.setTag(commentHolder);
         } else {
@@ -107,6 +132,7 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
     }
 
     static class CommentHolder {
+        ImageView commentButton;
         TextView author;
         TextView text;
         TextView score;

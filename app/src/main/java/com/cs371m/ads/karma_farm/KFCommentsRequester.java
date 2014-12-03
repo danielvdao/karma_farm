@@ -59,27 +59,20 @@ public class KFCommentsRequester {
                 try {
                     JSONObject cur = comments.getJSONObject(i);
 
-                    // If MoreComments, just add placeholder class
-                    if (cur.has("body")) {
-                        KFComment.KFMoreComments moreComment = new KFComment.KFMoreComments();
-                        moreComment.depth = depth[0];
-                        result.add(moreComment);
-                    } else {
+                    KFComment comment = new KFComment();
 
-                        KFComment comment = new KFComment();
+                    comment.author = cur.getString("author");
+                    comment.text = cur.getString("text");
+                    comment.KFscore = cur.getInt("rank");
+                    comment.score = cur.getInt("score");
+                    comment.depth = depth[0];
+                    comment.id = cur.getString("_id");
+                    result.add(comment);
 
-                        comment.author = cur.getString("author");
-                        comment.text = cur.getString("text");
-                        comment.KFscore = cur.getInt("rank");
-                        comment.score = cur.getInt("score");
-                        comment.depth = depth[0];
-
-                        result.add(comment);
-
-                        if ( cur.has("replies")) {
-                           requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), result, depth);
-                        }
+                    if ( cur.has("replies")) {
+                        requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), result, depth);
                     }
+
                 }catch(JSONException je){
                     Log.d(TAG, "JSONException while requesting comments");
                 }

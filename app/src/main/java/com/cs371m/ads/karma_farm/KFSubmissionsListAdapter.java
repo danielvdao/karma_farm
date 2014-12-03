@@ -29,7 +29,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
     public KFSubmissionsListAdapter(Context context, int layoutResourceId, List<KFSubmission> data,
                                     KFSubmissionsListFragment fragment) {
         super(context, layoutResourceId, data);
-
         mContext = context;
         mLayoutResourceId = layoutResourceId;
         mData = data;
@@ -41,6 +40,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View row = convertView;
+
         final SubmissionHolder holder;
         KFSubmission submission = mData.get(position);
 

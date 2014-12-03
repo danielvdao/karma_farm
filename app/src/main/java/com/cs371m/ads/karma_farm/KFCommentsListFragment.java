@@ -3,8 +3,13 @@ package com.cs371m.ads.karma_farm;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.ListFragment;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,9 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 
@@ -34,7 +41,9 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
     private HorizontalSwipeDetector swipeDetector;
 
     private static final String ARG_SUBREDDIT = "subreddit";
+
     private static final String TAG = "KFCommentsListFragment";
+
 
     public KFCommentsListFragment() {
         mHandler = new Handler();
@@ -149,6 +158,10 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
         getListView().setOnItemLongClickListener(longListener);
     }
 
+    public void postCommentDialog(String id) {
+        getActivity().showDialog(KFMain.COMMENT_DIALOG);
+    }
+
     public void flashOrange(View view) {
         final int orig = view.getSolidColor();
         final float[] from = new float[3];
@@ -233,7 +246,7 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
         spinner.setVisibility(View.VISIBLE);
 
         if(mComments.size() == 0){
-
+            final KFCommentsListFragment fragment = this;
             // Must execute network tasks outside the UI
             // thread. So create a new thread.
             new Thread(){
@@ -246,7 +259,7 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
                     mHandler.post(new Runnable(){
                         public void run(){
                             try {
-                                mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments);
+                                mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments, fragment);
                                 setListAdapter(mAdapter);
                                 spinner.setVisibility(View.GONE);
                             } catch (NullPointerException e) {
@@ -260,9 +273,11 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
             }.start();
         } else {
             Log.d(TAG, "using old list");
-            mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments);
+            mAdapter = new KFCommentsListAdapter(getActivity(), R.layout.comment_item, mComments, this);
             setListAdapter(mAdapter);
             spinner.setVisibility(View.GONE);
         }
     }
+
+
 }

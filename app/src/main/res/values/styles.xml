@@ -6,7 +6,7 @@
     </style>
 
     <style name="boldText">
-        <item name="android:textStyle">bold|italic</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="normalText">

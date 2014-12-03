@@ -5,6 +5,7 @@
     android:clickable="false"
     android:padding="8dp"
     android:focusable="false"
+    android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="false" >
 
     <TextView
@@ -12,35 +13,50 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
-        android:paddingBottom="5dp"/>
+        android:paddingBottom="5dp"
+        android:layout_alignParentStart="true"/>
 
-    <TextView
-        android:id="@+id/score"
+    <LinearLayout
+        android:id="@+id/comment_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:textStyle="normal"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textStyle="normal"
+            android:layout_gravity="right"
+            android:layout_marginRight="15dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <ImageView
+            android:id="@+id/comment"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="5dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:src="@drawable/ic_chat_grey600_48dp"
+            android:background="@null"
+            android:clickable="true" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/author" />
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/author"
+        android:layout_toLeftOf="@id/comment_box" />
 
     <TextView
         android:id="@+id/KFscore"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/text"
+        android:layout_alignParentLeft="true"
         android:textColor="#ff0000"/>
-
-    <TextView
-        android:id="@+id/msg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/score" />
 
 </RelativeLayout>

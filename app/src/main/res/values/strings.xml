@@ -17,7 +17,9 @@
     <string name="action_example">More</string>
     <string name="load_more_comments">load more comments</string>
     <string name="login_message">Login</string>
+    <string name="comment_message">Post a comment</string>
     <string name="login">Login</string>
+    <string name="post">Post</string>
     <string name="cancel">Cancel</string>
     <string name="nsfw">NSFW</string>
 
