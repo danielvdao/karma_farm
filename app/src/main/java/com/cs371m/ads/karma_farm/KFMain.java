@@ -292,8 +292,9 @@ public class KFMain extends Activity
     private Dialog commentDialog(AlertDialog.Builder builder, String id) {
 
         LayoutInflater inflater = LayoutInflater.from(this);
-
+        final String comment_id = id;
         final View commentView = inflater.inflate(R.layout.comment_dialog, null);
+
         builder.setMessage(R.string.comment_message)
                 .setView(commentView)
                 .setCancelable(false)
@@ -307,14 +308,13 @@ public class KFMain extends Activity
                                 if (mSharedPreferences.getInt("logged_in", 0) == 1){
                                     String username = mSharedPreferences.getString("username", null);
                                     String password = mSharedPreferences.getString("password", null);
-                                    String text = comment.toString();
-                                    //need comment id
-                                    //String comment_id = comment id;
-                                    //new CommentTask().execute(username, password, text, comment_id);
+                                    String text = comment.getText().toString();
+//                                    need comment id
+                                    new CommentTask().execute(username, password, text, comment_id);
                                 }
 
                                 else {
-                                    Toast.makeText(getApplicationContext(), "Please login!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "Please login to post.", Toast.LENGTH_LONG).show();
                                 }
                             }
                         })
