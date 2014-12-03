@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.app.AlertDialog;
@@ -197,6 +198,8 @@ public class KFMain extends Activity
             restoreActionBar();
             return true;
         }
+
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -281,12 +284,86 @@ public class KFMain extends Activity
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Intent intent = new Intent(getApplicationContext(), KFCommentTask.class);
                                 EditText comment = (EditText) commentView.findViewById(R.id.comment_text);
+                                if (mSharedPreferences.getInt("logged_in", 0) == 1){
+                                    String username = mSharedPreferences.getString("username", null);
+                                    String password = mSharedPreferences.getString("password", null);
+                                    String text = comment.toString();
+                                    //need comment id
+                                    //String comment_id = comment id;
+                                    //new CommentTask().execute(username, password, text, comment_id);
+                                }
+
+                                else {
+                                    Toast.makeText(getApplicationContext(), "Please login!", Toast.LENGTH_LONG).show();
+                                }
                             }
                         })
                 .setNegativeButton(R.string.cancel, null);
 
         return builder.create();
     }
+
+    private class CommentTask extends AsyncTask<String, String, Double>{
+        private JSONObject result;
+
+        @Override
+        protected Double doInBackground(String... params){
+            postData(params[0], params[1], params[2], params[3]);
+            return null;
+        }
+
+
+        protected void onPostExecute(Double result){
+            Log.d(TAG, "finished POST request");
+
+            try {
+                if (this.result.getString("success").equals("True")) {
+                    Toast.makeText(getApplicationContext(), "Comment succeeded", Toast.LENGTH_LONG).show();
+                }
+
+                else{
+                    Toast.makeText(getApplicationContext(), "Comment failed, please try again", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            catch (Exception ex){
+                Toast.makeText(getApplicationContext(), "Sorry an error on our end has happened!", Toast.LENGTH_LONG).show();
+            }
+
+
+        }
+
+        public void postData(String username, String password, String comment, String comment_id){
+            DefaultHttpClient comment_client = new DefaultHttpClient();
+            JSONObject comment_json = new JSONObject();
+            Log.d(TAG, "in postData username - " + username + " password - " + password);
+            try {
+                comment_json.put("username", username);
+                comment_json.put("password", password);
+                comment_json.put("text", comment);
+                comment_json.put("comment_id", comment_id);
+                HttpPost post_request = new HttpPost("http://104.131.71.174/api/v0/comment");
+                StringEntity params = new StringEntity(comment_json.toString());
+                post_request.addHeader("content-type", "application/json");
+                post_request.setEntity(params);
+
+                HttpResponse response = comment_client.execute(post_request);
+                HttpEntity entity = response.getEntity();
+                String entity_string = EntityUtils.toString(entity);
+
+                result = new JSONObject(entity_string);
+
+                Log.d(TAG, "success: " + result.getString("success"));
+
+            } catch (Exception ex) {
+                Log.d(TAG, "Exception: " + ex.toString());
+            } finally {
+                comment_client.getConnectionManager().shutdown();
+                Log.d(TAG, "Finished");
+            }
+        }
+    }
+
 
     private class LoginTask extends AsyncTask<String, String, Double>{
         private JSONObject result;
