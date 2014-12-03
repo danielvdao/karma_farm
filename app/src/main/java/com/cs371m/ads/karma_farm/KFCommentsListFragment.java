@@ -156,8 +156,8 @@ public class KFCommentsListFragment extends ListFragment implements SwipeVoteabl
         getListView().setOnItemLongClickListener(longListener);
     }
 
-    public void postCommentDialog(String id) {
-        getActivity().showDialog(KFMain.COMMENT_DIALOG);
+    public void postCommentDialog(Bundle args) {
+        getActivity().showDialog(KFMain.COMMENT_DIALOG, args);
     }
 
     public void flashOrange(View view) {

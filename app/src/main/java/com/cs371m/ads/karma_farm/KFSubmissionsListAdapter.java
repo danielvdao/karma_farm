@@ -39,7 +39,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.d(TAG, "getting views");
         View row = convertView;
 
         final SubmissionHolder holder;
