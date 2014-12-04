@@ -502,7 +502,7 @@ public class KFMain extends Activity
                 }
 
                 else{
-                    Toast.makeText(getApplicationContext(), "Vote failed, please try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Vote failed, please try again", Toast.LENGTH_SHORT).show();
                 }
             }
 
