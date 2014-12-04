@@ -23,6 +23,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class KFSubmissionsListFragment extends ListFragment {
 
@@ -61,6 +62,7 @@ public class KFSubmissionsListFragment extends ListFragment {
 
         mSharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
+
     }
 
     public static Fragment newInstance(String subreddit){
@@ -182,46 +184,50 @@ public class KFSubmissionsListFragment extends ListFragment {
                 KFSubmission submission = mKFSubmissions.get(position);
                 if (swipeDetector.swipeDetected()) {
 
-                    TextView scoreTextView = (TextView)view.findViewById(R.id.score_board)
-                            .findViewById(R.id.post_score);
-                    int originalValue = submission.score;
+                    if (mSharedPreferences.getInt("logged_in", 0) == 1) {
+                        TextView scoreTextView = (TextView) view.findViewById(R.id.score_board)
+                                .findViewById(R.id.post_score);
+                        int originalValue = submission.score;
 
-                    int score = Integer.parseInt(scoreTextView.getText().toString());
+                        int score = Integer.parseInt(scoreTextView.getText().toString());
 
-                    if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
-                        if(score <= originalValue) {
-                            Log.d(TAG, "upvote swipe on" + position);
+                        if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
+                            if (score <= originalValue) {
+                                Log.d(TAG, "upvote swipe on" + position);
 
-                            upVote(submission);
-                            int newScore = (score == originalValue) ? score + 1 : score + 2;
+                                upVote(submission);
+                                int newScore = (score == originalValue) ? score + 1 : score + 2;
 
-                            scoreTextView.setText(Integer.toString(newScore));
-                            scoreTextView.setTextColor(getResources().getColor(R.color.upvote));
-                            scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
-                                    R.style.boldText);
-                            flashOrange(view);
+                                scoreTextView.setText(Integer.toString(newScore));
+                                scoreTextView.setTextColor(getResources().getColor(R.color.upvote));
+                                scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
+                                        R.style.boldText);
+                                flashOrange(view);
 
+                            }
+
+                        } else {
+                            if (score >= originalValue) {
+                                Log.d(TAG, "downvote swipe on " + position);
+
+                                downVote(submission);
+                                int newScore = (score == originalValue) ? score - 1 : score - 2;
+
+                                scoreTextView.setText(Integer.toString(newScore));
+                                scoreTextView.setTextColor(getResources().getColor(R.color.downvote));
+                                scoreTextView.setActivated(true);
+                                scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
+                                        R.style.boldText);
+                                flashBlue(view);
+                            }
                         }
-
-                    } else {
-                        if(score >= originalValue) {
-                            Log.d(TAG, "downvote swipe on " + position);
-
-                            downVote(submission);
-                            int newScore = (score == originalValue) ? score - 1 : score - 2;
-
-                            scoreTextView.setText(Integer.toString(newScore));
-                            scoreTextView.setTextColor(getResources().getColor(R.color.downvote));
-                            scoreTextView.setActivated(true);
-                            scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
-                                    R.style.boldText);
-                            flashBlue(view);
-                        }
+                    }else {
+                        Toast.makeText(getActivity().getApplicationContext(), "Please login to vote.", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
+                } else {
                     onSubmissionClick(view);
                 }
+
 
             }
         };

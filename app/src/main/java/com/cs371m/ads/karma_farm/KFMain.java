@@ -78,6 +78,12 @@ public class KFMain extends Activity
         mSharedPreferences = getPreferences(MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
 
+        if (savedInstanceState != null) {
+            mSubredditName = savedInstanceState.getString("mSubredditName");
+        }
+        else
+            mSubredditName = "all";
+
         if (mSharedPreferences.getString("username", null) != null)
             Log.d(TAG, "have user: " + mSharedPreferences.getString("username", null));
 
@@ -138,7 +144,7 @@ public class KFMain extends Activity
     public void onSubmissionSelected(String url, String title) {
         // attach content view
         getFragmentManager().beginTransaction()
-                .replace(R.id.container, KFContentFragment.newInstance(url), CONTENT_FRAGMENT)
+                .replace(R.id.container, KFContentFragment.newInstance(url, title), CONTENT_FRAGMENT)
                 .addToBackStack(null)
                 .commit();
     }
@@ -167,12 +173,6 @@ public class KFMain extends Activity
     public void onBackPressed() {
         FragmentManager fm = getFragmentManager();
 
-        // when returning to subreddit list reset title to subreddit name
-        if(fm.findFragmentByTag(COMMENTS_FRAGMENT) != null
-                || fm.findFragmentByTag(CONTENT_FRAGMENT) != null){
-            getActionBar().setTitle(mSubredditName);
-        }
-
         //handle each potentially attached fragments back routine respectively here
         // hide progress bar if we were looing at post
         if (getFragmentManager().findFragmentByTag(CONTENT_FRAGMENT) != null) {
@@ -181,6 +181,16 @@ public class KFMain extends Activity
                 fragment.hideProgressBar();
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (!mSubredditName.toString().equals("all"))
+            outState.putString("mSubredditName", mSubredditName.toString());
+        else
+            outState.putString("mSubredditName", "all");
     }
 
 

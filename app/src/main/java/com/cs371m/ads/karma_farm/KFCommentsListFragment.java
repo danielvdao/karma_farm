@@ -6,6 +6,8 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ListFragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +37,14 @@ public class KFCommentsListFragment extends ListFragment {
     private ProgressBar spinner;
     private CommentListListener mListener;
     private int mCommentPosition;
-
+    SharedPreferences mSharedPreferences;
 
 
     public KFCommentsListFragment() {
 
         mHandler = new Handler();
         setRetainInstance(true);
+
     }
 
     public static Fragment newInstance(String id){
@@ -73,6 +77,7 @@ public class KFCommentsListFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         initialize();
+        mSharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -97,37 +102,41 @@ public class KFCommentsListFragment extends ListFragment {
                 KFComment comment = mComments.get(position);
                 if (swipeDetector.swipeDetected()) {
 
-                    TextView scoreTextView = (TextView)view.findViewById(R.id.score);
-                    int originalValue = comment.score;
+                    if (mSharedPreferences.getInt("logged_in", 0) == 1) {
+                        TextView scoreTextView = (TextView) view.findViewById(R.id.score);
+                        int originalValue = comment.score;
 
-                    int score = Integer.parseInt(scoreTextView.getText().toString());
+                        int score = Integer.parseInt(scoreTextView.getText().toString());
 
-                    if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
-                        if(score <= originalValue) {
-                            Log.d(TAG, "upvote swipe on" + position);
-                            upVote(comment);
+                        if (swipeDetector.getAction() == HorizontalSwipeDetector.Action.RL) {
+                            if (score <= originalValue) {
+                                Log.d(TAG, "upvote swipe on" + position);
+                                upVote(comment);
 
-                            int newScore = (score == originalValue) ? score + 1 : score + 2;
+                                int newScore = (score == originalValue) ? score + 1 : score + 2;
 
-                            scoreTextView.setText(Integer.toString(newScore));
-                            scoreTextView.setTextColor(getResources().getColor(R.color.upvote));
-                            scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
-                                    R.style.boldText);
-                            flashOrange(view);
+                                scoreTextView.setText(Integer.toString(newScore));
+                                scoreTextView.setTextColor(getResources().getColor(R.color.upvote));
+                                scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
+                                        R.style.boldText);
+                                flashOrange(view);
+                            }
+                        } else {
+                            if (score >= originalValue) {
+                                Log.d(TAG, "downvote swipe on " + position);
+                                downVote(comment);
+                                int newScore = (score == originalValue) ? score - 1 : score - 2;
+
+                                scoreTextView.setText(Integer.toString(newScore));
+                                scoreTextView.setTextColor(getResources().getColor(R.color.downvote));
+                                scoreTextView.setActivated(true);
+                                scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
+                                        R.style.boldText);
+                                flashBlue(view);
+                            }
                         }
                     } else {
-                        if(score >= originalValue) {
-                            Log.d(TAG, "downvote swipe on " + position);
-                            downVote(comment);
-                            int newScore = (score == originalValue) ? score - 1 : score - 2;
-
-                            scoreTextView.setText(Integer.toString(newScore));
-                            scoreTextView.setTextColor(getResources().getColor(R.color.downvote));
-                            scoreTextView.setActivated(true);
-                            scoreTextView.setTextAppearance(getActivity().getApplicationContext(),
-                                    R.style.boldText);
-                            flashBlue(view);
-                        }
+                        Toast.makeText(getActivity().getApplicationContext(), "Please login to vote.", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

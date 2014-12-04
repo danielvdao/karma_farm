@@ -39,8 +39,9 @@ public class KFContentFragment extends Fragment {
 
         if (mUrl == null || mUrl.equals(""))
             Log.d(TAG, "null uri");
-        setRetainInstance(true);
+
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -114,11 +115,12 @@ public class KFContentFragment extends Fragment {
     }
 
 
-    public static Fragment newInstance(String url){
+    public static Fragment newInstance(String url, String title) {
         KFContentFragment content = new KFContentFragment();
         // supply arguments to content fragment
         Bundle args = new Bundle();
         args.putString("url", url);
+        args.putString("title", title);
         content.setArguments(args);
         return content;
     }
