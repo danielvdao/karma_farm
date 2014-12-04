@@ -1,5 +1,7 @@
 package com.cs371m.ads.karma_farm;
 
+import android.graphics.Bitmap;
+
 public class KFSubmission {
 
     String subreddit;
@@ -9,15 +11,16 @@ public class KFSubmission {
     String url;
     String domain;
     String id;
-
-    int points;
+    String thumb_url;
+    Bitmap thumb;
     int numComments;
+    int score;
+    boolean isUpVoted;
+    boolean isDownVoted;
+    boolean isNSFW;
 
     String getDetails() {
-        String details = author
-                + " posted this and got "
-                + numComments
-                + " replies";
+        String details = "authored by /u/" + author;
         return details;
     }
 
@@ -26,6 +29,8 @@ public class KFSubmission {
     }
 
     String getScore(){
-        return Integer.toString(points);
+        return Integer.toString(score);
     }
+
+    String getNumComments() { return Integer.toString(numComments); }
 }

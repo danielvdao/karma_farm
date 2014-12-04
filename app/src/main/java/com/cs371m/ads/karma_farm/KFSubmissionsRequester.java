@@ -1,10 +1,13 @@
 package com.cs371m.ads.karma_farm;
 
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +29,7 @@ public class KFSubmissionsRequester {
     String mSubreddit;
     String mUrl;
     String mAfter;
+
 
     public KFSubmissionsRequester(String subreddit){
         mSubreddit = subreddit;
@@ -58,13 +62,12 @@ public class KFSubmissionsRequester {
      *
      * @return
      */
-    List<KFSubmission> requestSubmissionList(){
+    List<KFSubmission> requestSubmissionList() {
         String raw = RemoteData.readContents(mUrl);
 
         List<KFSubmission> result = new ArrayList<KFSubmission>();
 
         try{
-
             JSONObject data = new JSONObject(raw).getJSONObject("data");
 
             JSONArray children = data.getJSONArray("children");
@@ -82,12 +85,20 @@ public class KFSubmissionsRequester {
                 sub.title = cur.optString("title");
                 sub.url = cur.optString("url");
                 sub.numComments = cur.optInt("num_comments");
-                sub.points = cur.optInt("score");
+                sub.score = cur.optInt("score");
                 sub.author = cur.optString("author");
                 sub.subreddit = cur.optString("subreddit");
                 sub.permalink = cur.optString("permalink");
                 sub.domain = cur.optString("domain");
                 sub.id = cur.optString("id");
+                sub.thumb_url = cur.optString("thumbnail");
+
+                boolean over_18 = cur.getBoolean("over_18");
+
+                if(over_18 || sub.thumb_url.equals("nsfw")) {
+                    sub.isNSFW = true;
+                    Log.d(TAG, "got NSFW post: " + sub.title);
+                }
 
                 if(sub.title != null)
                     result.add(sub);
@@ -98,8 +109,19 @@ public class KFSubmissionsRequester {
 
         Log.d(TAG, "Fetched " + result.size() + " posts");
 
+        for(KFSubmission sub : result) {
+            try {
+                if(!sub.thumb_url.equals(""))
+                    sub.thumb = BitmapFactory.decodeStream(new URL(sub.thumb_url).openConnection().getInputStream());
+                else
+                    sub.thumb = null;
+            } catch (MalformedURLException e) {
+                sub.thumb = null;
+            } catch(Exception e){
+                Log.e("requestSubmissionList()", e.toString());
+            }
+        }
+
         return result;
     }
-
-
 }

@@ -4,15 +4,14 @@ public class KFComment {
 
     public String author;
     public String text;
-    public int karma;
+    public int score;
     public int KFscore;
     public int depth;
+    public boolean upVoted;
+    public boolean downVoted;
+    public String id;
 
-    public KFComment() {
-
-    }
-
-     public static class KFMoreComments extends KFComment{
+    public static class KFMoreComments extends KFComment{
 
     }
 }

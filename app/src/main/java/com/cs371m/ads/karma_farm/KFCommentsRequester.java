@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class KFCommentsRequester {
@@ -15,7 +14,6 @@ public class KFCommentsRequester {
     private static final String TAG = "KFCommentsRequester";
 
     private static final String HOST = "http://104.131.71.174";
-    private static final String PORT = "5000";
     private static final String CURRENT_API_VERSION = "/api/v0";
     private static final String ENDPOINT = "/comments";
 
@@ -29,7 +27,7 @@ public class KFCommentsRequester {
     }
 
     private void generateUrl() {
-        mUrl = HOST + ":" + PORT + CURRENT_API_VERSION + ENDPOINT + "/" + mSubmissionId;
+        mUrl = HOST + CURRENT_API_VERSION + ENDPOINT + "/" + mSubmissionId;
     }
 
 
@@ -59,31 +57,27 @@ public class KFCommentsRequester {
             for(int i = 0; i < comments.length(); i++ ) {
 
                 try {
+
                     JSONObject cur = comments.getJSONObject(i);
 
-                    // If MoreComments, just add placeholder class
-                    if (cur.has("body")) {
-                        KFComment.KFMoreComments moreComment = new KFComment.KFMoreComments();
-                        moreComment.depth = depth[0];
-                        result.add(moreComment);
-                    } else {
-
+                    if(!cur.has("body")) {
                         KFComment comment = new KFComment();
 
                         comment.author = cur.getString("author");
                         comment.text = cur.getString("text");
                         comment.KFscore = cur.getInt("rank");
-                        comment.karma = cur.getInt("score");
+                        comment.score = cur.getInt("score");
                         comment.depth = depth[0];
-
+                        comment.id = cur.getString("_id");
                         result.add(comment);
 
-                        if ( cur.has("replies")) {
-                           requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), result, depth);
+                        if (cur.has("replies")) {
+                            requestCommentsHelper((JSONArray) cur.getJSONArray("replies").get(0), result, depth);
                         }
                     }
+
                 }catch(JSONException je){
-                    Log.d(TAG, "JSONException while requesting comments");
+                    // TODO handle bad objects
                 }
             }
         }
