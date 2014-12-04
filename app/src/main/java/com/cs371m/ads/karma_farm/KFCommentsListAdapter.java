@@ -65,25 +65,30 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
             row.setTag(commentHolder);
         } else {
             commentHolder = (CommentHolder) row.getTag();
-            if (comment.downVoted) {
-                commentHolder.score.setText(Integer.toString(comment.score - 1));
-                commentHolder.score.setTextColor(getContext().getResources().getColor(R.color.downvote));
-                commentHolder.score.setTextAppearance(getContext(),
-                        R.style.boldText);
-            }
-            else if (comment.upVoted) {
-                commentHolder.score.setText(Integer.toString(comment.score + 1));
-                commentHolder.score.setTextColor(getContext().getResources().getColor(R.color.upvote));
-                commentHolder.score.setTextAppearance(getContext(),
-                        R.style.boldText);
-            }
-            else {
-                commentHolder.score.setText(Integer.toString(comment.score));
-                commentHolder.score.setTextColor(Color.parseColor("#000000"));
-                commentHolder.score.setTextAppearance(getContext(),
-                        R.style.normalText);
-            }
         }
+
+        if (comment.downVoted) {
+            commentHolder.score.setText(Integer.toString(comment.score - 1));
+            commentHolder.score.setTextColor(getContext().getResources().getColor(R.color.downvote));
+            commentHolder.score.setTextAppearance(getContext(),
+                    R.style.boldText);
+        }
+        else if (comment.upVoted) {
+            commentHolder.score.setText(Integer.toString(comment.score + 1));
+            commentHolder.score.setTextColor(getContext().getResources().getColor(R.color.upvote));
+            commentHolder.score.setTextAppearance(getContext(),
+                    R.style.boldText);
+        }
+        else {
+            commentHolder.score.setText(Integer.toString(comment.score));
+            commentHolder.score.setTextColor(Color.parseColor("#000000"));
+            commentHolder.score.setTextAppearance(getContext(),
+                    R.style.normalText);
+        }
+
+        Bundle bundle = (Bundle) commentHolder.commentButton.getTag();
+        bundle.putInt("position", position);
+        commentHolder.commentButton.setTag(bundle);
 
         commentHolder.commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,9 +97,10 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
                 // make post to backend with username and password
                 Bundle bundle = (Bundle) view.getTag();
                 String id = bundle.getString("id");
+                int pos = bundle.getInt("position");
 
                 if (id != null) {
-                    mListFragment.postCommentDialog(bundle);
+                    mListFragment.postCommentDialog(bundle, pos);
                 }
             }
         });
@@ -102,7 +108,7 @@ public class KFCommentsListAdapter extends ArrayAdapter<KFComment> {
         commentHolder.author.setText(comment.author);
         commentHolder.text.setText(comment.text);
 
-        Bundle bundle = new Bundle();
+        bundle = new Bundle();
         bundle.putInt("originalValue", comment.score);
         commentHolder.score.setTag(bundle);
 

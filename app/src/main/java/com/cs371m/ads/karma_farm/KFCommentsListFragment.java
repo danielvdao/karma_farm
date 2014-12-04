@@ -4,12 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.ListFragment;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,20 +14,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.Intent.getIntent;
 
 public class KFCommentsListFragment extends ListFragment {
+
+    private static final String ARG_SUBREDDIT = "subreddit";
+    private static final String TAG = "KFCommentsListFragment";
+    private static final HorizontalSwipeDetector swipeDetector = new HorizontalSwipeDetector();
 
     private KFCommentsListAdapter mAdapter;
     private Handler mHandler;
@@ -39,14 +33,14 @@ public class KFCommentsListFragment extends ListFragment {
     private KFCommentsRequester mCommentsRequester;
     private ProgressBar spinner;
     private CommentListListener mListener;
+    private int mCommentPosition;
 
-    private static final String ARG_SUBREDDIT = "subreddit";
 
-    private static final String TAG = "KFCommentsListFragment";
-    private static final HorizontalSwipeDetector swipeDetector = new HorizontalSwipeDetector();
 
     public KFCommentsListFragment() {
+
         mHandler = new Handler();
+        setRetainInstance(true);
     }
 
     public static Fragment newInstance(String id){
@@ -88,7 +82,7 @@ public class KFCommentsListFragment extends ListFragment {
         try {
             mListener = (CommentListListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnArticleSelectedListener");
+            throw new ClassCastException(activity.toString() + " must implement CommentListListener");
         }
     }
 
@@ -100,7 +94,6 @@ public class KFCommentsListFragment extends ListFragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int position,
                                     long arg3) {
-                Log.d(TAG, "item clicked");
                 KFComment comment = mComments.get(position);
                 if (swipeDetector.swipeDetected()) {
 
@@ -167,7 +160,8 @@ public class KFCommentsListFragment extends ListFragment {
         getListView().setOnItemLongClickListener(longListener);
     }
 
-    public void postCommentDialog(Bundle args) {
+    public void postCommentDialog(Bundle args, int pos) {
+        mCommentPosition = pos;
         getActivity().showDialog(KFMain.COMMENT_DIALOG, args);
 
     }
@@ -191,6 +185,21 @@ public class KFCommentsListFragment extends ListFragment {
         comment.upVoted = false;
         comment.downVoted = false;
         mListener.vote(comment.id, "False", "CLEAR");
+    }
+
+    public void showComment(String username, String text) {
+        KFComment reply = new KFComment();
+        reply.author = username;
+        reply.downVoted = false;
+        reply.upVoted = false;
+        reply.depth = mComments.get(mCommentPosition).depth + 1;
+        reply.id = "TBD";
+        reply.KFscore = 0;
+        reply.score = 1;
+        reply.text = text;
+        mComments.add(mCommentPosition + 1, reply);
+        mAdapter.notifyDataSetChanged();
+        return;
     }
 
     public void flashOrange(View view) {

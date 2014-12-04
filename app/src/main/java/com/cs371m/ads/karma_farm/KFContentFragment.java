@@ -39,6 +39,7 @@ public class KFContentFragment extends Fragment {
 
         if (mUrl == null || mUrl.equals(""))
             Log.d(TAG, "null uri");
+        setRetainInstance(true);
     }
 
     @Override

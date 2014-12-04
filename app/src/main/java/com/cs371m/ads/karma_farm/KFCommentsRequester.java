@@ -77,7 +77,7 @@ public class KFCommentsRequester {
                     }
 
                 }catch(JSONException je){
-                    Log.d(TAG, "JSONException while requesting comments");
+                    // TODO handle bad objects
                 }
             }
         }

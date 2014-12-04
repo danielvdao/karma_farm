@@ -111,9 +111,12 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         bundle = new Bundle();
 
         bundle.putString("url", submission.url);
+        bundle.putString("title", submission.title);
         holder.title.setTag(bundle);
 
+        bundle = new Bundle();
         bundle.putString("id", submission.id);
+        bundle.putString("title", submission.title);
         holder.comment_button.setTag(bundle);
         holder.comment_button.setFocusable(false) ;
 

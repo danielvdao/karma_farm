@@ -360,8 +360,8 @@ public class KFSubmissionsListFragment extends ListFragment {
 
     public interface SubmissionListListener {
 
-        public void onSubmissionSelected(String url);
-        public void onSubmissionCommentsSelected(String id);
+        public void onSubmissionSelected(String url, String title);
+        public void onSubmissionCommentsSelected(String id, String title);
         public void vote(String id, String isSubmission, String action);
     }
 
@@ -375,25 +375,26 @@ public class KFSubmissionsListFragment extends ListFragment {
         }
         if (bundle != null) {
             String url = bundle.getString("url");
+            String title = bundle.getString("title");
             Log.d(TAG, "submission clicked");
-            mListener.onSubmissionSelected(url);
+            mListener.onSubmissionSelected(url, title);
         }
     }
 
     public void onSubmissionCommentsClick(View view) {
         Bundle bundle = (Bundle) view.getTag();
         String id = bundle.getString("id");
+        String title = bundle.getString("title");
         Log.d(TAG, "comments clicked");
-        mListener.onSubmissionCommentsSelected(id);
+        mListener.onSubmissionCommentsSelected(id, title);
     }
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
         try {
             mListener = (SubmissionListListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnArticleSelectedListener");
+            throw new ClassCastException(activity.toString() + " must implement SubmissionListListener");
         }
     }
 

@@ -4,7 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.app.ProgressDialog;
+import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
@@ -16,11 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.app.AlertDialog;
-import android.content.Intent;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -30,7 +28,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 /**
- * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+ * KarmaFarm Main Activity
  */
 public class KFMain extends Activity
         implements KFNavigationDrawerFragment.NavigationDrawerCallbacks,
@@ -42,6 +40,7 @@ public class KFMain extends Activity
     public static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
     public static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
 
+    // TODO Add constants for our endpoints
     public static final String[] DEFAULT_SUBS =
             {"announcement", "Art", "AskReddit", "askscience", "aww", "blog",
             "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
@@ -63,13 +62,9 @@ public class KFMain extends Activity
     public KFContentFragment mKFContentFragment;
 
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
-    private boolean firstTime; // TODO FIX THIS
+    private boolean firstTime;
     SharedPreferences mSharedPreferences;
     SharedPreferences.Editor mEditor;
-
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
     private CharSequence mSubredditName;
 
     @Override
@@ -96,8 +91,6 @@ public class KFMain extends Activity
         mNavigationDrawerFragment = (KFNavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
-        mSubredditName = getTitle();
-
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -106,18 +99,16 @@ public class KFMain extends Activity
         Fragment lastFragment = getFragmentManager().findFragmentById(R.id.container);
 
         if (lastFragment != null) {
-
-            Log.d(TAG, "reattaching " + lastFragment.toString());
-
+            Log.d(TAG, "last fragment is \n\n\n" + lastFragment.toString());
             // don't add old submissions to backstack
             if(lastFragment instanceof KFCommentsListFragment) {
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.container, lastFragment)
+                        .replace(R.id.container, lastFragment, COMMENTS_FRAGMENT)
                         .commit();
             }
             else if(lastFragment instanceof KFSubmissionsListFragment) {
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.container, lastFragment)
+                        .replace(R.id.container, lastFragment, SUBMISSIONS_FRAGMENT)
                         .commit();
             }
         } else {
@@ -144,10 +135,7 @@ public class KFMain extends Activity
     }
 
     @Override
-    public void onSubmissionSelected(String url) {
-
-        Log.d(TAG, "submission selected");
-
+    public void onSubmissionSelected(String url, String title) {
         // attach content view
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, KFContentFragment.newInstance(url), CONTENT_FRAGMENT)
@@ -155,7 +143,7 @@ public class KFMain extends Activity
                 .commit();
     }
 
-    public void onSubmissionCommentsSelected(String id) {
+    public void onSubmissionCommentsSelected(String id, String title) {
         // attach comments view
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, KFCommentsListFragment.newInstance(id), COMMENTS_FRAGMENT)
@@ -177,8 +165,15 @@ public class KFMain extends Activity
 
     @Override
     public void onBackPressed() {
-        //handle each potentially attached fragments back routine respectively here
+        FragmentManager fm = getFragmentManager();
 
+        // when returning to subreddit list reset title to subreddit name
+        if(fm.findFragmentByTag(COMMENTS_FRAGMENT) != null
+                || fm.findFragmentByTag(CONTENT_FRAGMENT) != null){
+            getActionBar().setTitle(mSubredditName);
+        }
+
+        //handle each potentially attached fragments back routine respectively here
         // hide progress bar if we were looing at post
         if (getFragmentManager().findFragmentByTag(CONTENT_FRAGMENT) != null) {
             KFContentFragment fragment = (KFContentFragment) getFragmentManager().findFragmentById(R.id.container);
@@ -239,6 +234,7 @@ public class KFMain extends Activity
 
         return super.onOptionsItemSelected(item);
     }
+
 
     public void vote(String id, String isSubmission, String action) {
         Log.d(TAG, "action : " + action);
@@ -325,10 +321,13 @@ public class KFMain extends Activity
                                     String text = comment.getText().toString();
 //                                    need comment id
                                     new CommentTask().execute(username, password, text, comment_id);
+                                    KFCommentsListFragment listFragment = (KFCommentsListFragment) getFragmentManager().findFragmentByTag(COMMENTS_FRAGMENT);
+                                    // show text in comment list
+                                    listFragment.showComment(username, text);
                                 }
 
                                 else {
-                                    Toast.makeText(getApplicationContext(), "Please login to post.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "Please login to reply.", Toast.LENGTH_LONG).show();
                                 }
                             }
                         })
@@ -489,7 +488,7 @@ public class KFMain extends Activity
 
             try {
                 if (this.result.getString("success").equals("True")) {
-                    Toast.makeText(getApplicationContext(), "Vote succeeded.", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "Vote succeeded.", Toast.LENGTH_LONG).show();
                 }
 
                 else{
@@ -507,20 +506,6 @@ public class KFMain extends Activity
         public void postData(String username, String password, String id, String submission, String type){
             DefaultHttpClient vote_client = new DefaultHttpClient();
             JSONObject vote_json = new JSONObject();
-
-            Log.d(TAG, "vote type: " + type);
-
-            if(username == null)
-                Log.d(TAG, "username null");
-
-            if(password == null)
-                Log.d(TAG, "password null");
-
-            if(id == null)
-                Log.d(TAG, "id null");
-
-            if(submission == null)
-                Log.d(TAG, "submission null");
 
 
             Log.d(TAG, "in VotingTask username - " + username + " password - " + password);
