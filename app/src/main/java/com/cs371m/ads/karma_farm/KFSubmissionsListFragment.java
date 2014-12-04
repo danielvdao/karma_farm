@@ -356,11 +356,9 @@ public class KFSubmissionsListFragment extends ListFragment {
         anim.start();
     }
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "getActivity() = " + getActivity().toString());
         initialize();
     }
 
