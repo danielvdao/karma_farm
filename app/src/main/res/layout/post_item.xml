@@ -32,7 +32,6 @@
             />
         <RelativeLayout
             android:id="@+id/comments"
-            android:clickable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -50,7 +49,6 @@
 
             <TextView
                 android:id="@+id/num_comments"
-                android:clickable="true"
                 android:textColor="#FFFFFF"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

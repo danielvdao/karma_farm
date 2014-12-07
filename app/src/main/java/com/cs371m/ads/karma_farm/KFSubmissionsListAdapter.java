@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -56,6 +58,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
             holder.details = (TextView)row.findViewById(R.id.post_details);
             holder.thumb = (ImageView)row.findViewById(R.id.thumb);
             holder.comment_button = (ImageButton)row.findViewById(R.id.comment_icon);
+            holder.post_text = (LinearLayout)row.findViewById(R.id.post_text);
             holder.nsfw = (TextView)row.findViewById(R.id.nsfw);
             // set NSFW tag
             if(submission.isNSFW) {
@@ -157,7 +160,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         if (submission.thumb != null)
             holder.thumb.setImageBitmap(submission.thumb);
         else {
-            holder.thumb.setImageResource(R.drawable.placeholder);
+            holder.thumb.setVisibility(View.GONE);
         }
 
         return row;
@@ -173,6 +176,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         TextView score;
         TextView num_comments;
         TextView title;
+        LinearLayout post_text;
         TextView details;
         TextView nsfw;
         ImageView thumb;

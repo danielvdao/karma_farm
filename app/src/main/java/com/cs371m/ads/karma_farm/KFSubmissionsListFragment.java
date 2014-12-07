@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -37,7 +38,7 @@ public class KFSubmissionsListFragment extends ListFragment {
     SharedPreferences.Editor mEditor;
 
     private ProgressBar spinner;
-    private HorizontalSwipeDetector swipeDetector;
+    public HorizontalSwipeDetector swipeDetector;
 
     private static final String ARG_SUBREDDIT = "subreddit";
     private static final String TAG = "KFSubmissionsListFragment";
@@ -52,14 +53,13 @@ public class KFSubmissionsListFragment extends ListFragment {
         mKFSubmissions = new ArrayList<KFSubmission>();
         mOld_posts = new HashSet<String>();
         mLoading = false;
+        swipeDetector = new HorizontalSwipeDetector();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        swipeDetector = new HorizontalSwipeDetector();
-
         mSharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
 
@@ -173,8 +173,6 @@ public class KFSubmissionsListFragment extends ListFragment {
             }
         });
 
-
-        // Vote by swiping setup listeners
         getListView().setOnTouchListener(swipeDetector);
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
@@ -182,6 +180,7 @@ public class KFSubmissionsListFragment extends ListFragment {
                                     long arg3) {
                 Log.d(TAG, "item clicked");
                 KFSubmission submission = mKFSubmissions.get(position);
+
                 if (swipeDetector.swipeDetected()) {
 
                     if (mSharedPreferences.getInt("logged_in", 0) == 1) {

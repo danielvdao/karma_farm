@@ -27,6 +27,7 @@ public class HorizontalSwipeDetector implements View.OnTouchListener {
         return mSwipeDetected;
     }
 
+
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
@@ -44,11 +45,9 @@ public class HorizontalSwipeDetector implements View.OnTouchListener {
                     // left or right
                     if (deltaX < 0) {
                         mSwipeDetected = Action.LR;
-                        return true;
                     }
                     if (deltaX > 0) {
                         mSwipeDetected = Action.RL;
-                        return true;
                     }
                 }
             }
