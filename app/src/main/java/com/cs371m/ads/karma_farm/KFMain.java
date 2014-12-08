@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.app.AlertDialog;
@@ -180,14 +181,31 @@ public class KFMain extends Activity
     public void onBackPressed() {
         FragmentManager fm = getFragmentManager();
 
+        Fragment lastFragment = fm.findFragmentById(R.id.container);
+        if (lastFragment instanceof KFContentFragment) {
+            KFContentFragment fragment = (KFContentFragment) lastFragment;
+            WebView webView = ((KFContentFragment) lastFragment).getWebView();
+            if (webView != null ) {
+                if( webView.canGoBack()) {
+                    fragment.showProgressBar();
+                    webView.goBack();
+                    fragment.hideProgressBar();
+                    return;
+                }
+                else
+                    fragment.hideProgressBar();
+            }
+
+        }
         getActionBar().setTitle(mSubredditName);
+
         //handle each potentially attached fragments back routine respectively here
         // hide progress bar if we were looing at post
-        if (getFragmentManager().findFragmentByTag(CONTENT_FRAGMENT) != null) {
-            KFContentFragment fragment = (KFContentFragment) getFragmentManager().findFragmentById(R.id.container);
-            if (fragment != null && fragment.getTag().equals(CONTENT_FRAGMENT))
-                fragment.hideProgressBar();
-        }
+//        if (fm.findFragmentByTag(CONTENT_FRAGMENT) != null) {
+//            KFContentFragment fragment = (KFContentFragment) fm.findFragmentById(R.id.container);
+//            if (fragment != null && fragment.getTag().equals(CONTENT_FRAGMENT))
+//                fragment.hideProgressBar();
+//        }
         super.onBackPressed();
     }
 

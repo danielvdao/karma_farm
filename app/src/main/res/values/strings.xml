@@ -22,6 +22,7 @@
     <string name="post">Post</string>
     <string name="cancel">Cancel</string>
     <string name="nsfw">NSFW</string>
+    <string name="manual_hint">Enter subreddit</string>
 
 
 </resources>

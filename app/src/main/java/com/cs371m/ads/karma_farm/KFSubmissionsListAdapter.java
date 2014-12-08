@@ -60,11 +60,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
             holder.comment_button = (ImageButton)row.findViewById(R.id.comment_icon);
             holder.post_text = (LinearLayout)row.findViewById(R.id.post_text);
             holder.nsfw = (TextView)row.findViewById(R.id.nsfw);
-            // set NSFW tag
-            if(submission.isNSFW) {
-                Log.d(TAG, "got NSFW post: " + submission.title);
-                Log.d(TAG, "visibilty of NSFW is: " + holder.nsfw.getVisibility());
-            }
 
             holder.num_comments = (TextView)row
                     .findViewById(R.id.score_board)
@@ -78,8 +73,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         }
 
         // set textviews
-        int nsfwVisibility = (submission.isNSFW) ? View.VISIBLE : View.GONE;
-        holder.nsfw.setVisibility(nsfwVisibility);
 
         // set karma score
         if (submission.isDownVoted) {
@@ -100,6 +93,7 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
             holder.score.setTextAppearance(getContext(),
                     R.style.normalText);
         }
+
         Bundle bundle = new Bundle();
         bundle.putInt("originalValue", submission.score);
         holder.score.setTag(bundle);
@@ -108,7 +102,6 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         holder.title.setText(submission.title);
         holder.num_comments.setText(submission.getNumComments());
         holder.nsfw.setText(R.string.nsfw);
-
 
         // configure clickable areas
         bundle = new Bundle();
@@ -157,11 +150,18 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
         }
 
         // if no thumbnail remove the view
-        if (submission.thumb != null)
+        if (submission.thumb != null) {
+            holder.thumb.setVisibility(View.VISIBLE);
             holder.thumb.setImageBitmap(submission.thumb);
+        }
         else {
             holder.thumb.setVisibility(View.GONE);
+            holder.post_text.setX(holder.post_text.getLeft() - row.getLeft() - 10);
         }
+
+        // set NSFW tag
+        int nsfwVisibility = (submission.isNSFW) ? View.VISIBLE : View.GONE;
+        holder.nsfw.setVisibility(nsfwVisibility);
 
         return row;
     }

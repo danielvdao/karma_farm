@@ -98,6 +98,7 @@ public class KFContentFragment extends Fragment {
         });
 
 
+
         // configure web view
         WebSettings settings = mWebView.getSettings();
         settings.setBuiltInZoomControls(true);              // show zoom controls
@@ -106,7 +107,7 @@ public class KFContentFragment extends Fragment {
         settings.setLoadWithOverviewMode(true);
         settings.setJavaScriptEnabled(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        settings.setUserAgentString("AndroidWebView");      
+        settings.setUserAgentString("AndroidWebView");
 
         mIsWebViewAvailable = true;
         mWebView.loadUrl(mUrl);
@@ -134,6 +135,10 @@ public class KFContentFragment extends Fragment {
 
     public void hideProgressBar() {
         progressBar.setVisibility(View.GONE);
+    }
+
+    public void showProgressBar() {
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -176,7 +181,8 @@ public class KFContentFragment extends Fragment {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
-        }
 
+        }
     }
 }
+
