@@ -32,8 +32,8 @@ import org.json.JSONObject;
  */
 public class KFMain extends Activity
         implements KFNavigationDrawerFragment.NavigationDrawerCallbacks,
-                   KFSubmissionsListFragment.SubmissionListListener,
-                   KFCommentsListFragment.CommentListListener {
+        KFSubmissionsListFragment.SubmissionListListener,
+        KFCommentsListFragment.CommentListListener {
 
     private static final String TAG = "KFMain";
     public static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
@@ -43,16 +43,16 @@ public class KFMain extends Activity
     // TODO Add constants for our endpoints
     public static final String[] DEFAULT_SUBS =
             {"announcement", "Art", "AskReddit", "askscience", "aww", "blog",
-            "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
-            "EarthPorn", "explainlikeimfive", "Fitness", "food", "funny",
-            "Futurology", "gadgets", "gaming", "GetMotivated", "gifs",
-            "history", "IAmA", "InternetIsBeautiful", "Jokes", "LifeProTips",
-            "listentothis", "mildlyinteresting", "movies", "Music", "news",
-            "nosleep", "nottheonion", "oldschoolcool", "personalfinance",
-            "philosophy", "photoshopbattles", "pics", "science",
-            "Showerthoughts", "space", "sports", "television", "tifu",
-            "todayilearned", "TwoXChromosomes", "UpliftingNews", "videos",
-            "worldnews", "writingprompts"};
+                    "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
+                    "EarthPorn", "explainlikeimfive", "Fitness", "food", "funny",
+                    "Futurology", "gadgets", "gaming", "GetMotivated", "gifs",
+                    "history", "IAmA", "InternetIsBeautiful", "Jokes", "LifeProTips",
+                    "listentothis", "mildlyinteresting", "movies", "Music", "news",
+                    "nosleep", "nottheonion", "oldschoolcool", "personalfinance",
+                    "philosophy", "photoshopbattles", "pics", "science",
+                    "Showerthoughts", "space", "sports", "television", "tifu",
+                    "todayilearned", "TwoXChromosomes", "UpliftingNews", "videos",
+                    "worldnews", "writingprompts"};
 
     public static final int LOGIN_DIALOG = 0;
     public static final int COMMENT_DIALOG = 1;
@@ -65,6 +65,7 @@ public class KFMain extends Activity
     private boolean firstTime;
     SharedPreferences mSharedPreferences;
     SharedPreferences.Editor mEditor;
+    private CharSequence mTitle;
     private CharSequence mSubredditName;
 
     @Override
@@ -79,10 +80,14 @@ public class KFMain extends Activity
         mEditor = mSharedPreferences.edit();
 
         if (savedInstanceState != null) {
+            mTitle = savedInstanceState.getString("mTitle");
             mSubredditName = savedInstanceState.getString("mSubredditName");
         }
-        else
+        else {
+            mTitle = "all";
             mSubredditName = "all";
+        }
+        setTitle(mTitle);
 
         if (mSharedPreferences.getString("username", null) != null)
             Log.d(TAG, "have user: " + mSharedPreferences.getString("username", null));
@@ -130,7 +135,9 @@ public class KFMain extends Activity
     public void onNavigationDrawerItemSelected(int position) {
 
         mSubredditName = DEFAULT_SUBS[position];
-        Log.d(TAG, "Drawer item selected " + mSubredditName);
+        mTitle = mSubredditName.toString();
+
+        Log.d(TAG, mSubredditName + " selected from drawer");
 
         setTitle(mSubredditName);
 
@@ -142,7 +149,10 @@ public class KFMain extends Activity
 
     @Override
     public void onSubmissionSelected(String url, String title) {
-        // attach content view
+
+        mTitle = title;
+        getActionBar().setTitle(mTitle);
+
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, KFContentFragment.newInstance(url, title), CONTENT_FRAGMENT)
                 .addToBackStack(null)
@@ -151,6 +161,8 @@ public class KFMain extends Activity
 
     public void onSubmissionCommentsSelected(String id, String title) {
         // attach comments view
+        mTitle = title;
+        getActionBar().setTitle(mTitle);
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, KFCommentsListFragment.newInstance(id), COMMENTS_FRAGMENT)
                 .addToBackStack(null)
@@ -161,18 +173,14 @@ public class KFMain extends Activity
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        if(!firstTime)
-            actionBar.setTitle(mSubredditName);
-        else {
-            actionBar.setTitle("All");
-            firstTime = false;
-        }
+        actionBar.setTitle(mTitle);
     }
 
     @Override
     public void onBackPressed() {
         FragmentManager fm = getFragmentManager();
 
+        getActionBar().setTitle(mSubredditName);
         //handle each potentially attached fragments back routine respectively here
         // hide progress bar if we were looing at post
         if (getFragmentManager().findFragmentByTag(CONTENT_FRAGMENT) != null) {
@@ -187,10 +195,9 @@ public class KFMain extends Activity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        if (!mSubredditName.toString().equals("all"))
-            outState.putString("mSubredditName", mSubredditName.toString());
-        else
-            outState.putString("mSubredditName", "all");
+        outState.putString("mTitle", mTitle.toString());
+        outState.putString("mSubredditName", mSubredditName.toString());
+
     }
 
 
@@ -216,6 +223,7 @@ public class KFMain extends Activity
             }
 
             restoreActionBar();
+
             return true;
         }
         return super.onCreateOptionsMenu(menu);
