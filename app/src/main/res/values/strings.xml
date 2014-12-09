@@ -16,6 +16,8 @@
     <string name="exit_message">Exit? Are you sure?</string>
     <string name="exit_toast">Press back again to exit.</string>
     <string name="login">Login</string>
+    <string name="thumbnail_description">A thumbnail</string>
+    <string name="comment_button_description">A comment button</string>
     <string name="post">Post</string>
     <string name="cancel">Cancel</string>
     <string name="nsfw">NSFW</string>

@@ -11,16 +11,17 @@
 
     <ImageView
         android:id="@+id/thumb"
+        android:contentDescription="@string/thumbnail_description"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:paddingLeft="3dp"
-        android:layout_alignParentLeft="true" />
+        android:padding="3dp"
+        android:layout_alignParentStart="true" />
 
     <LinearLayout
         android:id="@+id/score_board"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:orientation="vertical">
 
         <TextView
@@ -39,9 +40,9 @@
 
             <ImageButton
                 android:id="@+id/comment_icon"
+                android:contentDescription="@string/comment_button_description"
                 android:layout_width="65dp"
                 android:layout_height="65dp"
-                android:layout_marginStart="20dp"
                 android:scaleType="fitXY"
                 android:paddingTop="5dp"
                 android:layout_gravity="end"
@@ -55,8 +56,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@id/comment_icon"
                 android:layout_alignBottom="@id/comment_icon"
-                android:layout_marginTop="12dp"
-                android:layout_marginStart="40dp"/>
+                android:layout_marginTop="9dp"
+                android:layout_marginStart="24dp"/>
 
 
         </RelativeLayout>
@@ -65,18 +66,17 @@
     <LinearLayout
         android:id="@+id/post_text"
         android:orientation="vertical"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/score_board"
-        android:layout_toRightOf="@id/thumb"
-        android:layout_marginLeft="8dp">
+        android:layout_toStartOf="@id/score_board"
+        android:layout_toEndOf="@id/thumb"
+        android:layout_marginStart="5dp">
 
         <TextView
             android:id="@+id/post_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
             android:focusableInTouchMode="false"
             android:textColor="#336699"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -86,8 +86,6 @@
             android:id="@+id/post_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-
             android:textAppearance="?android:attr/textAppearanceSmall"
             />
 
@@ -99,8 +97,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/post_text"
-        android:layout_alignParentLeft="true"
-        android:paddingLeft="3dp"
+        android:layout_alignParentStart="true"
+        android:paddingStart="3dp"
+        android:paddingEnd="3dp"
         android:textColor="@color/red"
         android:text="@string/nsfw" />
 

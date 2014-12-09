@@ -140,13 +140,13 @@ public class KFSubmissionsListAdapter extends ArrayAdapter<KFSubmission> {
 
         // position number nicely
         if (submission.numComments > 999) {
-            holder.num_comments.setTranslationX(-30);
+            holder.num_comments.setTranslationX(-38);
         }
         else if (submission.numComments > 99) {
-            holder.num_comments.setTranslationX(-20);
+            holder.num_comments.setTranslationX(-24);
         }
         else if (submission.numComments > 9) {
-            holder.num_comments.setTranslationX(-10);
+            holder.num_comments.setTranslationX(-12);
         }
 
         // if no thumbnail remove the view
