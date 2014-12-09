@@ -51,7 +51,7 @@ public class KFMain extends Activity
 
     // TODO Add constants for our endpoints
     public static final String[] DEFAULT_SUBS =
-    {"announcement", "Art", "AskReddit", "askscience", "aww", "blog",
+    {"all", "art", "AskReddit", "askscience", "aww", "blog",
     "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
     "EarthPorn", "explainlikeimfive", "Fitness", "food", "funny",
     "Futurology", "gadgets", "gaming", "GetMotivated", "gifs",
@@ -63,14 +63,10 @@ public class KFMain extends Activity
     "todayilearned", "TwoXChromosomes", "UpliftingNews", "videos",
     "worldnews", "writingprompts"};
 
-
-    public KFSubmissionsListFragment mKFSubmissionsListFragment;
-    public KFCommentsListFragment mKFCommentsFragment;
-    public KFContentFragment mKFContentFragment;
-
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
-    SharedPreferences mSharedPreferences;
-    SharedPreferences.Editor mEditor;
+
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
     private Handler mHandler;
     private CharSequence mTitle;
     private CharSequence mSubredditName;
@@ -98,15 +94,6 @@ public class KFMain extends Activity
         }
         setTitle(mTitle);
 
-        if (mSharedPreferences.getString("username", null) != null)
-            Log.d(TAG, "have user: " + mSharedPreferences.getString("username", null));
-
-        if (mSharedPreferences.getString("password", null) != null)
-            Log.d(TAG, "with password: " + mSharedPreferences.getString("password", null));
-
-        mKFSubmissionsListFragment = new KFSubmissionsListFragment();
-        mKFCommentsFragment = new KFCommentsListFragment();
-        mKFContentFragment = new KFContentFragment();
         mHandler = new Handler();
 
         mNavigationDrawerFragment = (KFNavigationDrawerFragment)
@@ -136,7 +123,7 @@ public class KFMain extends Activity
             }
         } else {
             getFragmentManager().beginTransaction()
-                    .replace(R.id.container, KFSubmissionsListFragment.newInstance("All")
+                    .replace(R.id.container, KFSubmissionsListFragment.newInstance("all")
                             , SUBMISSIONS_FRAGMENT)
                     .commit();
         }
