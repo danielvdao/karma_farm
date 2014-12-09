@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -37,43 +38,50 @@ public class KFMain extends Activity
         KFCommentsListFragment.CommentListListener {
 
     private static final String TAG = "KFMain";
+    private static final long EXIT_BACK_WINDOW_MILLIS = 1500l;
+
     public static final String COMMENTS_FRAGMENT = "KFCommentsListFragment";
     public static final String SUBMISSIONS_FRAGMENT = "KFSubmissionsListFragment";
     public static final String CONTENT_FRAGMENT = "KFContentFragment"; // TODO
+    public static final int LOGIN_DIALOG = 0;
+    public static final int COMMENT_DIALOG = 1;
+    public static final int EXIT_DIALOG = 3;
+
+
 
     // TODO Add constants for our endpoints
     public static final String[] DEFAULT_SUBS =
-            {"announcement", "Art", "AskReddit", "askscience", "aww", "blog",
-                    "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
-                    "EarthPorn", "explainlikeimfive", "Fitness", "food", "funny",
-                    "Futurology", "gadgets", "gaming", "GetMotivated", "gifs",
-                    "history", "IAmA", "InternetIsBeautiful", "Jokes", "LifeProTips",
-                    "listentothis", "mildlyinteresting", "movies", "Music", "news",
-                    "nosleep", "nottheonion", "oldschoolcool", "personalfinance",
-                    "philosophy", "photoshopbattles", "pics", "science",
-                    "Showerthoughts", "space", "sports", "television", "tifu",
-                    "todayilearned", "TwoXChromosomes", "UpliftingNews", "videos",
-                    "worldnews", "writingprompts"};
+    {"announcement", "Art", "AskReddit", "askscience", "aww", "blog",
+    "books", "creepy", "dataisbeautiful", "DIY", "Documentaries",
+    "EarthPorn", "explainlikeimfive", "Fitness", "food", "funny",
+    "Futurology", "gadgets", "gaming", "GetMotivated", "gifs",
+    "history", "IAmA", "InternetIsBeautiful", "Jokes", "LifeProTips",
+    "listentothis", "mildlyinteresting", "movies", "Music", "news",
+    "nosleep", "nottheonion", "oldschoolcool", "personalfinance",
+    "philosophy", "photoshopbattles", "pics", "science",
+    "Showerthoughts", "space", "sports", "television", "tifu",
+    "todayilearned", "TwoXChromosomes", "UpliftingNews", "videos",
+    "worldnews", "writingprompts"};
 
-    public static final int LOGIN_DIALOG = 0;
-    public static final int COMMENT_DIALOG = 1;
 
     public KFSubmissionsListFragment mKFSubmissionsListFragment;
     public KFCommentsListFragment mKFCommentsFragment;
     public KFContentFragment mKFContentFragment;
 
     private KFNavigationDrawerFragment mNavigationDrawerFragment;
-    private boolean firstTime;
     SharedPreferences mSharedPreferences;
     SharedPreferences.Editor mEditor;
+    private Handler mHandler;
     private CharSequence mTitle;
     private CharSequence mSubredditName;
+    private boolean mBackPressedRecently;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setProgressBarIndeterminateVisibility(true);
         setContentView(R.layout.activity_nav_bar);
 
@@ -99,9 +107,12 @@ public class KFMain extends Activity
         mKFSubmissionsListFragment = new KFSubmissionsListFragment();
         mKFCommentsFragment = new KFCommentsListFragment();
         mKFContentFragment = new KFContentFragment();
+        mHandler = new Handler();
 
         mNavigationDrawerFragment = (KFNavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
+
+        mBackPressedRecently = false;
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -124,7 +135,6 @@ public class KFMain extends Activity
                         .commit();
             }
         } else {
-            firstTime = true;
             getFragmentManager().beginTransaction()
                     .replace(R.id.container, KFSubmissionsListFragment.newInstance("All")
                             , SUBMISSIONS_FRAGMENT)
@@ -151,8 +161,8 @@ public class KFMain extends Activity
     @Override
     public void onSubmissionSelected(String url, String title) {
 
-        mTitle = title;
-        getActionBar().setTitle(mTitle);
+        mTitle = url;
+        getActionBar().setTitle(url);
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, KFContentFragment.newInstance(url, title), CONTENT_FRAGMENT)
@@ -192,11 +202,28 @@ public class KFMain extends Activity
                     fragment.hideProgressBar();
                     return;
                 }
-                else
-                    fragment.hideProgressBar();
+                fragment.hideProgressBar();
+            }
+
+        } else if (fm.getBackStackEntryCount() == 0) {
+//            showDialog(EXIT_DIALOG);
+            if(mBackPressedRecently) {
+                super.onBackPressed();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.exit_toast, Toast.LENGTH_SHORT).show();
+                mBackPressedRecently = true;
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBackPressedRecently = false;
+                    }
+                }, EXIT_BACK_WINDOW_MILLIS);
+                return;
             }
 
         }
+
         getActionBar().setTitle(mSubredditName);
 
         //handle each potentially attached fragments back routine respectively here
@@ -297,9 +324,29 @@ public class KFMain extends Activity
                 String comment_id = args.getString("id");
                 dialog = this.commentDialog(builder, comment_id);
                 break;
+            case EXIT_DIALOG:
+                dialog = this.exitDialog(builder);
+                break;
         }
 
         return dialog;
+    }
+
+    // going to set press back twice to exit
+    private Dialog exitDialog(AlertDialog.Builder builder) {
+        builder.setMessage(R.string.exit_message)
+                .setCancelable(false)
+                .setPositiveButton(R.string.yes,
+                        new DialogInterface.OnClickListener() {
+                            // get login info to pass to login task
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                finish();
+                            }
+                        })
+                .setNegativeButton(R.string.no, null);
+
+        return builder.create();
     }
 
     private Dialog loginDialog(AlertDialog.Builder builder) {

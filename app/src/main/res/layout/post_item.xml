@@ -31,6 +31,7 @@
             android:layout_gravity="center"
             android:textAppearance="?android:attr/textAppearanceMedium"
             />
+
         <RelativeLayout
             android:id="@+id/comments"
             android:paddingRight="-4dp"
