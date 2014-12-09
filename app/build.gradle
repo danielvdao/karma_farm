@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.cs371m.ads.karma_farm"
-        minSdkVersion 14
-        targetSdkVersion 17
+        minSdkVersion 17
+        targetSdkVersion 20
         versionCode 1
         versionName "1.0"
     }

@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.app.AlertDialog;
 import org.apache.http.HttpEntity;
@@ -284,7 +286,6 @@ public class KFMain extends Activity
 
         return super.onOptionsItemSelected(item);
     }
-
 
     public void vote(String id, String isSubmission, String action) {
         Log.d(TAG, "action : " + action);
